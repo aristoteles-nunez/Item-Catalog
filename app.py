@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
+from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base
@@ -15,7 +15,7 @@ db_session = DBSession()
 
 @app.route('/')
 def index():
-    return "Hello world"
+    return render_template('index.html', logged_in=False)
 
 
 if __name__ == '__main__':
