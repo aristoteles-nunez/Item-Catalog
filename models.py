@@ -41,7 +41,7 @@ class Item(Base):
     """It stores every category's item specifying which user has created it
     """
     __tablename__ = 'item'
-    
+
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
     description = Column(Text)
