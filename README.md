@@ -6,9 +6,9 @@
 
 # Prerequisites
 
-This software is compatible with `python 3.X` .
+This software is compatible with `python 3.X`
 
-Once yoy have installed python3 on your system, move inside project folder and install prerequisites through:
+Once you have installed python3 on your system, move inside project folder and install prerequisites through:
 ```
 pip install -r requirements.txt
 ```
