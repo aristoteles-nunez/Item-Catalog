@@ -26,6 +26,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
+    image_path = Column(Text)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -33,7 +34,8 @@ class Category(Base):
     def serialize(self):
         return {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+            'image_path': self.image_path
         }
 
 
@@ -47,6 +49,7 @@ class Item(Base):
     description = Column(Text)
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
+    image_path = Column(Text)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -55,7 +58,8 @@ class Item(Base):
         return {
             'id': self.id,
             'name': self.name,
-            'description': self.description
+            'description': self.description,
+            'image_path': self.image_path
         }
 
 engine = create_engine('sqlite:///item_catalog.db')
