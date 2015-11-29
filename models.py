@@ -13,7 +13,7 @@ class User(Base):
     """
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Text, nullable=False)
     email = Column(Text, nullable=False)
     picture = Column(Text)
@@ -24,7 +24,7 @@ class Category(Base):
     """
     __tablename__ = 'category'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Text, nullable=False)
     image_path = Column(Text)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -44,7 +44,7 @@ class Item(Base):
     """
     __tablename__ = 'item'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Text, nullable=False)
     description = Column(Text)
     category_id = Column(Integer, ForeignKey('category.id'))
