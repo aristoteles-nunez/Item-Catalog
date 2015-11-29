@@ -15,7 +15,8 @@ db_session = DBSession()
 
 @app.route('/')
 def index():
-    return render_template('index.html', logged_in=False)
+    categories = db_session.query(Category).all()
+    return render_template('index.html', categories=categories, logged_in=False)
 
 
 @app.route('/categories/json/')
