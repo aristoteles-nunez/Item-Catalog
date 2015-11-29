@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
+
 {% block content %}
-<div class="container-fluid" style="margin: auto; width: 80%;">
-    {% for category in categories %}
-        <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center img-rounded" data-category-url="{{ url_for('get_category', category_id=category.id) }}" style="height: 180px; width: 170px; ">
+<div class="container-fluid" style="margin: auto; width: 100%;">
+    {%- for category in categories -%}
+        <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center img-rounded" data-category-url="{{ url_for('get_category', category_id=category.id) }}" style="height: 170px; width: 170px; ">
             <strong>{{category.name}}</strong>
-            {% if category.image_path and category.image_path|length > 0 %}
-                <img src="{{ url_for('static', filename=category.image_path) }}" width="140" class="img-circle">
-            {% else %}
-                <img src="{{ url_for('static', filename='images/noimage.png') }}" width="140" class="img-circle">
-            {% endif %}
-            <br>
+            {%- if category.image_path and category.image_path|length > 0 -%}
+                <img src="{{ url_for('static', filename=category.image_path) }}" width="140" class="img-rounded">
+            {%- else -%}
+                <img src="{{ url_for('static', filename='images/noimage.png') }}" width="140" class="img-rounded">
+            {%- endif -%}
             <br>
         </div>
-    {% endfor %}
+    {%- endfor -%}
 </div>
 
 <script type="text/javascript" charset="utf-8">

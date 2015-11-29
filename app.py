@@ -14,16 +14,16 @@ db_session = DBSession()
 
 
 @app.route('/')
-@app.route('/categories/')
 def index():
     categories = db_session.query(Category).order_by(Category.name).all()
-    return render_template('index.html', categories=categories, logged_in=False)
+    return render_template('index.html', categories=categories, active_category=0, logged_in=False)
 
 
 @app.route('/categories/<category_id>/')
 def get_category(category_id):
+    categories = db_session.query(Category).order_by(Category.name).all()
     category = db_session.query(Category).filter_by(id=category_id).one()
-    return render_template('items.html')
+    return render_template('items.html', categories=categories, active_category=int(category_id), logged_in=False)
 
 
 @app.route('/categories/json/')

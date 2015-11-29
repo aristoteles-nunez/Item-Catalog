@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Items Catalog</title>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <style type="text/css" media="screen">
         .category-tile:hover {
             cursor:pointer;
@@ -44,12 +44,34 @@
                 {% endif %}
             </div>
         </div>
+
     </nav>
     <div class="clearfix">...</div>
     <br>
     <br>
-    {% block content %}
-    {% endblock %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="navbar-default" role="navigation">
+                <ul class="nav nav-pills nav-stacked" id="side-menu" style="margin: auto; width: 95%;">
+                    <li {% if active_category == 0 %} class="active" {% endif %} >
+                        <a href="{{ url_for('index') }}"><i class="fa fa-table fa-fw" data-category-url="latest_items"></i> Latest added Items</a>
+                    </li>
+                {%- for category in categories -%}
+                    <li {% if active_category == category.id %} class="active" {% endif %}>
+                        <a href="{{ url_for('get_category', category_id=category.id) }}"><i class="fa fa-table fa-fw" data-category-url="message1"></i>{{category.name}}</a>
+                    </li>
+                {%- endfor -%}
+                </ul>
+
+            </div>
+
+        </div>
+        <div class="col-md-9">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
 
 </body>
 </html>
