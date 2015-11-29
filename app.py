@@ -23,7 +23,7 @@ def index():
 @app.route('/categories/<category_id>/')
 def get_category(category_id):
     category = db_session.query(Category).filter_by(id=category_id).one()
-    return jsonify(category.serialize)
+    return render_template('items.html')
 
 
 @app.route('/categories/json/')
