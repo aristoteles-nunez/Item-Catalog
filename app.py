@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base
+from models import Base, Category, User, Item
 
 __author__ = 'Sotsir'
 
@@ -16,6 +16,12 @@ db_session = DBSession()
 @app.route('/')
 def index():
     return render_template('index.html', logged_in=False)
+
+
+@app.route('/categories/json/')
+def categories_json():
+    categories = db_session.query(Category).all()
+    return jsonify(categories=[r.serialize for r in categories])
 
 
 if __name__ == '__main__':
