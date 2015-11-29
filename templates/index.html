@@ -1,36 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="col-sm-6 col-md-4 col-lg-3 text-center" style="display:table;background-image: url({{ url_for('static', filename='images/noimage.png') }}); background-size: 140px 140px; height: 140px; width: 140px; ">
-        <div style="vertical-align: middle; display:table-cell;">
-            Example of a DIV element with a background image:
-        </div>
-    </div>
-    <div class="col-sm-6 col-md-4 col-lg-3 category-tile text-center " data-toggle="modal" style="display:table;background-image: url({{ url_for('static', filename='images/noimage.png') }}); background-size: 140px 140px; height: 140px; width: 140px; ">
-        <div style="vertical-align: middle; height:3em; display:table-cell;">
-             <div class="thumbnail">
-                 <div style="background-color: rgba(0, 0, 0, 0.3);">Small </div>
-             </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-md-4 col-lg-3 category-tile text-center img-rounded" data-toggle="modal" style="display:table; background-size: 140px 140px; height: 140px; width: 140px; ">
-        <div style="vertical-align: middle; height:3em; display:table-cell;">
-             <div class="thumbnail">
-                 <div style="background-color: rgba(0, 0, 0, 0.3);">Small </div>
-             </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center " style="height: 210px; width: 170px; ">
-        <h4> category_title very long </h4>
-        <img src="{{ url_for('static', filename='images/noimage.png') }}" width="140" height="140" class="img-circle">
-
+<div class="container-fluid" style="margin: auto; width: 80%;">
+    <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center img-rounded" style="height: 100%; width: 170px; ">
+        <strong>Sports</strong>
+        <img src="{{ url_for('static', filename='images/samples/sports.png') }}" width="140" class="img-circle">
+        <br>
+        <br>
     </div>
     <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center img-rounded" style="height: 100%; width: 170px; ">
-        <strong> category_title_very long  please</strong>
+        <strong>Algorithms</strong>
+        <img src="{{ url_for('static', filename='images/samples/algorithm.png') }}" width="140" class="img-circle">
+        <br>
+        <br>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center img-rounded" style="height: 100%; width: 170px; ">
+        <strong>Vehicles</strong>
+        <img src="{{ url_for('static', filename='images/samples/cars.png') }}" width="140" class="img-circle">
+        <br>
+        <br>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center img-rounded" style="height: 100%; width: 170px; ">
+        <strong> Board Games</strong>
+        <img src="{{ url_for('static', filename='images/samples/baduk.png') }}" width="140" class="img-circle">
+        <br>
+        <br>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center img-rounded" style="height: 100%; width: 170px; ">
+        <strong> Others</strong>
         <img src="{{ url_for('static', filename='images/noimage.png') }}" width="140" class="img-circle">
+        <br>
         <br>
     </div>
 </div>
+
+<script type="text/javascript" charset="utf-8">
+    // Animate in the movies when the page loads
+    $(document).ready(function () {
+      $('.category-tile').hide().first().show("fast", function showNext() {
+        $(this).next("div").show("fast", showNext);
+      });
+    });
+</script>
 
 {% endblock %}
