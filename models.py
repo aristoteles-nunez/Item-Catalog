@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, Text, ForeignKey
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+import datetime
 
 __author__ = 'Sotsir'
 
@@ -26,7 +27,6 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Text, nullable=False)
-    image_path = Column(Text)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -34,8 +34,7 @@ class Category(Base):
     def serialize(self):
         return {
             'id': self.id,
-            'name': self.name,
-            'image_path': self.image_path
+            'name': self.name
         }
 
 
@@ -50,6 +49,7 @@ class Item(Base):
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
     image_path = Column(Text)
+    modified_date = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -59,7 +59,9 @@ class Item(Base):
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'image_path': self.image_path
+            'modified_date': self.modified_date,
+            'image_path': self.image_path,
+            'category_id': self.category_id
         }
 
 engine = create_engine('sqlite:///item_catalog.db')
