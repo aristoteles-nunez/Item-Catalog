@@ -3,11 +3,11 @@
 
 {% block content %}
 <div class="container-fluid" style="margin: auto; width: 100%;">
-    {%- for category in categories -%}
-        <div class="col-sm-6 col-md-4 col-lg-3  category-tile text-center img-rounded" data-category-url="{{ url_for('get_category', category_id=category.id) }}" style="height: 170px; width: 170px; ">
-            <strong>{{category.name}}</strong>
-            {%- if category.image_path and category.image_path|length > 0 -%}
-                <img src="{{ url_for('static', filename=category.image_path) }}" width="140" class="img-rounded">
+    {%- for item in items -%}
+        <div class="col-sm-6 col-md-4 col-lg-3  item-tile text-center img-rounded" data-category-url="{{ url_for('get_category', category_id=item.category_id) }}" style="height: 170px; width: 170px;">
+            <strong>{{item.name}}</strong>
+            {%- if item.image_path and item.image_path|length > 0 -%}
+                <img src="{{ url_for('static', filename=item.image_path) }}" width="140" class="img-rounded">
             {%- else -%}
                 <img src="{{ url_for('static', filename='images/noimage.png') }}" width="140" class="img-rounded">
             {%- endif -%}
@@ -18,14 +18,14 @@
 
 <script type="text/javascript" charset="utf-8">
     // Obtain redirection url from div tag, and make redirection
-    $(document).on('click', '.category-tile', function (event) {
+    $(document).on('click', '.item-tile', function (event) {
         var url_go = $(this).attr('data-category-url')
         window.location.href = url_go;
     });
 
     // Animate in the movies when the page loads
     $(document).ready(function () {
-      $('.category-tile').hide().first().show("fast", function showNext() {
+      $('.item-tile').hide().first().show("fast", function showNext() {
         $(this).next("div").show("fast", showNext);
       });
     });

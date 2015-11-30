@@ -16,20 +16,29 @@ db_session = DBSession()
 @app.route('/')
 def index():
     categories = db_session.query(Category).order_by(Category.name).all()
-    return render_template('index.html', categories=categories, active_category=0, logged_in=False)
+    latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
+    return render_template('index.html', categories=categories, items=latest_items,
+                           active_category=0, logged_in=False)
 
 
 @app.route('/categories/<category_id>/')
 def get_category(category_id):
     categories = db_session.query(Category).order_by(Category.name).all()
     category = db_session.query(Category).filter_by(id=category_id).one()
-    return render_template('items.html', categories=categories, active_category=int(category_id), logged_in=False)
+    return render_template('items.html', categories=categories, active_category=int(category_id),
+                           logged_in=False)
 
 
 @app.route('/categories/json/')
 def categories_json():
     categories = db_session.query(Category).order_by(Category.name).all()
     return jsonify(categories=[r.serialize for r in categories])
+
+
+@app.route('/items/json/')
+def items_json():
+    items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
+    return jsonify(items=[r.serialize for r in items])
 
 
 if __name__ == '__main__':

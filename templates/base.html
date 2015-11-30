@@ -11,7 +11,7 @@
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <style type="text/css" media="screen">
-        .category-tile:hover {
+        .item-tile:hover {
             cursor:pointer;
             /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&amp;0+0,0.65+100 */
             background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,0.65) 100%); /* FF3.6+ */
@@ -54,11 +54,11 @@
             <div class="navbar-default" role="navigation">
                 <ul class="nav nav-pills nav-stacked" id="side-menu" style="margin: auto; width: 95%;">
                     <li {% if active_category == 0 %} class="active" {% endif %} >
-                        <a href="{{ url_for('index') }}"><i class="fa fa-table fa-fw" data-category-url="latest_items"></i> Latest added Items</a>
+                        <a href="{{ url_for('index') }}"> Latest modified Items</a>
                     </li>
                 {%- for category in categories -%}
                     <li {% if active_category == category.id %} class="active" {% endif %}>
-                        <a href="{{ url_for('get_category', category_id=category.id) }}"><i class="fa fa-table fa-fw" data-category-url="message1"></i>{{category.name}}</a>
+                        <a href="{{ url_for('get_category', category_id=category.id) }}">{{category.name}}</a>
                     </li>
                 {%- endfor -%}
                 </ul>
