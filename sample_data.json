@@ -1,31 +1,129 @@
 [
   {
-    "name":"Sports",
-    "image_path": "images/samples/sports.png",
-    "user_id": 1
-  },{
-    "name":"Algorithms",
-    "image_path": "images/samples/algorithm.png",
-    "user_id": 1
-  },{
-    "name":"Vehicles",
-    "image_path": "images/samples/cars.png",
-    "user_id": 1
-  },{
-    "name":"Board Games",
-    "image_path": "images/samples/baduk.png",
-    "user_id": 1
-  },{
-    "name":"Books",
-    "image_path": "images/samples/books.png",
-    "user_id": 1
-  },{
-    "name":"Movies",
-    "image_path": "images/samples/movies.png",
-    "user_id": 1
-  },{
-    "name":"Others",
-    "image_path": "",
-    "user_id": 1
+    "name": "Sotsir",
+    "email": "aristoteles.nunez@gmail.com",
+    "picture": "",
+    "categories": [
+      {
+        "name": "Sports",
+        "items": [
+          {
+            "name": "Basketball",
+            "description": "",
+            "image_path": "images/samples/sports.png"
+          },
+          {
+            "name": "Soccer",
+            "description": "",
+            "image_path": ""
+          },
+          {
+            "name": "Table tennis",
+            "description": "",
+            "image_path": ""
+          }
+        ]
+      },
+      {
+        "name": "Algorithms",
+        "items": [
+          {
+            "name": "Dijkstra",
+            "description": "",
+            "image_path": "images/samples/algorithm.png"
+          },
+          {
+            "name": "Binary Search",
+            "description": "",
+            "image_path": ""
+          },
+          {
+            "name": "Bubble Sort",
+            "description": "",
+            "image_path": ""
+          }
+        ]
+      },
+      {
+        "name": "Vehicles",
+        "items": [
+          {
+            "name": "Jetta",
+            "description": "",
+            "image_path": "images/samples/cars.png"
+          },
+          {
+            "name": "Yaris",
+            "description": "",
+            "image_path": ""
+          },
+          {
+            "name": "Jeep Cherokee",
+            "description": "",
+            "image_path": ""
+          }
+        ]
+      },
+      {
+        "name": "Movies",
+        "items": [
+          {
+            "name": "3 Idiots",
+            "description": "",
+            "image_path": ""
+          },
+          {
+            "name": "The peaceful warrior",
+            "description": "",
+            "image_path": ""
+          },
+          {
+            "name": "Gattaca",
+            "description": "",
+            "image_path": ""
+          }
+        ]
+      },
+      {
+        "name": "Board Games",
+        "items": [
+          {
+            "name": "Chess",
+            "description": "",
+            "image_path": ""
+          },
+          {
+            "name": "Go",
+            "description": "",
+            "image_path": "images/samples/baduk.png"
+          },
+          {
+            "name": "Jenga",
+            "description": "",
+            "image_path": ""
+          }
+        ]
+      },
+      {
+        "name": "Books",
+        "items": [
+          {
+            "name": "The princess bride",
+            "description": "",
+            "image_path": ""
+          },
+          {
+            "name": "I robot",
+            "description": "",
+            "image_path": ""
+          },
+          {
+            "name": "Foundation",
+            "description": "",
+            "image_path": ""
+          }
+        ]
+      }
+    ]
   }
 ]

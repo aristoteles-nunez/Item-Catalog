@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from models import Base, User, Category, Item
 import json
 import sys
+import time
 
 engine = create_engine('sqlite:///item_catalog.db')
 Base.metadata.bind = engine
@@ -31,17 +32,25 @@ def read_data_from_json_file(file_name):
 
 
 def main():
-    """ Method that insert one user and adds a set of categories with items into database
+    """ Method that insert users by by one,  and add them a set of categories with items into database
     """
-    user = User(name="Sotsir", email="sotshiro@gmail.com", picture="")
-    db_session.add(user)
-    db_session.commit()
     data = read_data_from_json_file("sample_data.json")
-    for element in data:
-        category = Category(name=element["name"], image_path=element["image_path"],
-                            user_id=element["user_id"])
-        db_session.add(category)
+    for element_user in data:
+        user = User(name=element_user["name"], email=element_user["email"],
+                    picture=element_user["picture"])
+        db_session.add(user)
         db_session.commit()
+        for element_category in element_user["categories"]:
+            category = Category(name=element_category["name"], user_id=user.id)
+            db_session.add(category)
+            db_session.commit()
+            time.sleep(1)
+            for element_item in element_category["items"]:
+                item = Item(name=element_item["name"], description= element_item["description"],
+                            category_id=category.id, image_path=element_item["image_path"],
+                            user_id=user.id)
+                db_session.add(item)
+                db_session.commit()
 
 
 if __name__ == '__main__':
