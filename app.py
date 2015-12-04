@@ -24,9 +24,9 @@ def index():
 @app.route('/categories/<category_id>/')
 def get_category(category_id):
     categories = db_session.query(Category).order_by(Category.name).all()
-    category = db_session.query(Category).filter_by(id=category_id).one()
+    items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
     return render_template('items.html', categories=categories, active_category=int(category_id),
-                           logged_in=False)
+                           items=items, logged_in=False)
 
 
 @app.route('/categories/json/')
