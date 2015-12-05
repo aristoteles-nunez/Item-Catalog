@@ -1,34 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid" style="margin: auto; width: 100%;">
-    {%- for item in items -%}
-        <div class="col-sm-6 col-md-4 col-lg-3  item-tile text-center img-rounded" data-category-url="{{ url_for('get_category', category_id=item.category_id) }}" style="height: 170px; width: 170px;">
-            <strong>{{item.name}}</strong>
-            {%- if item.image_path and item.image_path|length > 0 -%}
-                <img src="{{ url_for('static', filename=item.image_path) }}" width="140" class="img-rounded">
-            {%- else -%}
-                <img src="{{ url_for('static', filename='images/noimage.png') }}" width="140" class="img-rounded">
-            {%- endif -%}
-            <br>
-        </div>
-    {%- endfor -%}
+<div class="row">
+  <div class="col-sm-6 col-md-4">
+    <div class="thumbnail" style="width:200px">
+      <img src="{{ url_for('static', filename='images/noimage.png') }}" alt="..." width="140px">
+      <div class="caption">
+        <strong>Thumbnail label</strong>
+        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+      </div>
+    </div>
+  </div>
 </div>
-
 <script type="text/javascript" charset="utf-8">
-    // Obtain redirection url from div tag, and make redirection
-    $(document).on('click', '.item-tile', function (event) {
-        var url_go = $(this).attr('data-category-url')
-        window.location.href = url_go;
-    });
-
-    // Animate in the movies when the page loads
-    $(document).ready(function () {
-      $('.item-tile').hide().first().show("fast", function showNext() {
-        $(this).next("div").show("fast", showNext);
-      });
-    });
 </script>
+
 
 {% endblock %}
 

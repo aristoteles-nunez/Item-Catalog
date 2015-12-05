@@ -25,7 +25,7 @@ def index():
 def get_category(category_id):
     categories = db_session.query(Category).order_by(Category.name).all()
     items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
-    return render_template('items.html', categories=categories, active_category=int(category_id),
+    return render_template('index.html', categories=categories, active_category=int(category_id),
                            items=items, logged_in=False)
 
 
@@ -33,6 +33,14 @@ def get_category(category_id):
 def categories_json():
     categories = db_session.query(Category).order_by(Category.name).all()
     return jsonify(categories=[r.serialize for r in categories])
+
+
+@app.route('/categories/<category_id>/items/<item_id>/')
+def get_item(category_id, item_id):
+    categories = db_session.query(Category).order_by(Category.name).all()
+    item = db_session.query(Item).filter_by(id=category_id).one()
+    return render_template('items.html', categories=categories, active_category=int(category_id),
+                           item=item, logged_in=False)
 
 
 @app.route('/items/json/')
