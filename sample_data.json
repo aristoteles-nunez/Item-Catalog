@@ -9,18 +9,18 @@
         "items": [
           {
             "name": "Basketball",
-            "description": "",
-            "image_path": "images/samples/sports.png"
+            "description": "Basketball is a sport played by two teams of five players on a rectangular court. The objective is to shoot a ball through a hoop 18 inches (46 cm) in diameter and 10 feet (3.048 m) high mounted to a backboard at each end.",
+            "image_path": "images/samples/basketball.jpg"
           },
           {
             "name": "Soccer",
-            "description": "",
-            "image_path": ""
+            "description": "Soccer is a sport played between two teams of eleven players with a spherical ball. It is played by 250 million players in over 150 countries, making it the world's most popular sport.[4][5][6][7] The game is played on a rectangular field with a goal at each end. The object of the game is to score by getting the ball into the opposing goal.",
+            "image_path": "images/samples/soccer.jpg"
           },
           {
             "name": "Table tennis",
-            "description": "",
-            "image_path": ""
+            "description": "Table tennis, also known as ping pong, is a sport in which two or four players hit a lightweight ball back and forth across a table using a small, round bat. The game takes place on a hard table divided by a net. Except for the initial serve, players must allow a ball played toward them only one bounce on their side of the table and must return it so that it bounces on the opposite side. Points are scored when a player fails to return the ball within the rules. Play is fast and demands quick reactions. Spinning the ball alters its trajectory and limits an opponent's options, giving the hitter a great advantage. When doing so the hitter has a better chance of scoring if the spin is successful.",
+            "image_path": "images/samples/table_tennis.jpg"
           }
         ]
       },
@@ -29,17 +29,17 @@
         "items": [
           {
             "name": "Dijkstra",
-            "description": "",
-            "image_path": "images/samples/algorithm.png"
+            "description": "Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a graph, which may represent, for example, road networks. It was conceived by computer scientist Edsger W. Dijkstra in 1956 and published three years later",
+            "image_path": "images/samples/dijkstra.gif"
           },
           {
             "name": "Binary Search",
-            "description": "",
-            "image_path": ""
+            "description": "Binary search or half-interval search algorithm finds the position of a target value within a sorted array.[1][2] The binary search algorithm can be classified as a dichotomic divide-and-conquer search algorithm and executes in logarithmic time.",
+            "image_path": "images/samples/binary_search.png"
           },
           {
             "name": "Bubble Sort",
-            "description": "",
+            "description": "Bubble sort, sometimes referred to as sinking sort, is a simple sorting algorithm that repeatedly steps through the list to be sorted, compares each pair of adjacent items and swaps them if they are in the wrong order. The pass through the list is repeated until no swaps are needed, which indicates that the list is sorted. ",
             "image_path": ""
           }
         ]
@@ -49,18 +49,18 @@
         "items": [
           {
             "name": "Jetta",
-            "description": "",
+            "description": "The Volkswagen Jetta is a small family car produced by the German manufacturer Volkswagen since 1979. Positioned to fill a sedan niche above the firm's Golf hatchback offering, it has been marketed over six generations variously as the Atlantic, Fox, Vento, Bora, City Jetta, Jetta City, GLI, Jetta, Clasico, Voyage, and Sagitar.",
             "image_path": "images/samples/cars.png"
           },
           {
             "name": "Yaris",
-            "description": "",
+            "description": "Is a subcompact car produced by Toyota since 1999, replacing the Starlet. Between 1999 and 2005, some markets received the same vehicles under the Toyota Echo name. Toyota has used the 'Yaris' and 'Echo' names on the export version of several different Japanese-market models.",
             "image_path": ""
           },
           {
             "name": "Jeep Cherokee",
-            "description": "",
-            "image_path": ""
+            "description": "The Jeep Grand Cherokee is a mid-size SUV produced by the American manufacturer Jeep. While some other SUVs were manufactured with body-on-frame construction, the Jeep Grand Cherokee has always used a unibody chassis.",
+            "image_path": "images/samples/jeep_grand_cherokee.jpg"
           }
         ]
       },
@@ -69,18 +69,23 @@
         "items": [
           {
             "name": "3 Idiots",
-            "description": "",
-            "image_path": ""
+            "description": "Two friends are searching for their long lost companion. They revisit their college days and recall the memories of their friend who inspired them to think differently, even as the rest of the world called them \"idiots\"",
+            "image_path": "images/samples/3_idiots.jpg"
           },
           {
             "name": "The peaceful warrior",
-            "description": "",
-            "image_path": ""
+            "description": "A chance encounter with a stranger changes the life of a college gymnast.",
+            "image_path": "images/samples/peaceful_warrior.jpg"
           },
           {
             "name": "Gattaca",
-            "description": "",
-            "image_path": ""
+            "description": "A genetically inferior man assumes the identity of a superior one in order to pursue his lifelong dream of space travel.",
+            "image_path": "images/samples/gattaca.jpg"
+          },
+          {
+            "name": "Elite Squad",
+            "description": "1997, Captain Nascimento has to find a substitute for his occupation while trying to take down drug dealers and criminals before the Pope comes to Rio de Janeiro, Brazil.",
+            "image_path": "images/samples/elite_squad.jpg"
           }
         ]
       },
@@ -89,17 +94,17 @@
         "items": [
           {
             "name": "Chess",
-            "description": "",
-            "image_path": ""
+            "description": "Chess is a two-player board game played on a chessboard, a checkered gameboard with 64 squares arranged in an eight-by-eight grid. Chess is played by millions of people worldwide in homes, urban parks, clubs, online, correspondence, and in tournaments. In recent years, chess has become part of some school curricula.",
+            "image_path": "images/samples/chess.jpg"
           },
           {
             "name": "Go",
-            "description": "",
+            "description": "Is a board game involving two players, that originated in ancient China more than 2,500 years ago. It was considered one of the four essential arts of a cultured Chinese scholar in antiquity. ",
             "image_path": "images/samples/baduk.png"
           },
           {
             "name": "Jenga",
-            "description": "",
+            "description": "Jenga is a game of physical and mental skill created by Leslie Scott, and currently marketed by Parker Brothers, a division of Hasbro. During the game, players take turns removing one block at a time from a tower constructed of 54 blocks. Each block removed is then balanced on top of the tower, creating a progressively taller but less stable structure",
             "image_path": ""
           }
         ]
@@ -109,18 +114,18 @@
         "items": [
           {
             "name": "The princess bride",
-            "description": "",
-            "image_path": ""
+            "description": "The Princess Bride is a 1973 fantasy romance novel written by William Goldman. The book combines elements of comedy, adventure, fantasy, romantic love, romance, and fairy tale. It is presented as an abridgment (or all the good parts) of the book titled \"True Love and High Adventures\" by S. Morgenstern, and Goldman’s \"commentary\" asides are constant throughout.",
+            "image_path": "images/samples/the_princess_bride.jpg"
           },
           {
-            "name": "I robot",
-            "description": "",
-            "image_path": ""
+            "name": "The Humanoids",
+            "description": "Is a 1947 science fiction novelette by Jack Williamson (1908–2006). Willamson's influence for this story was in the aftermath of World War II and the atomic bombing of Hiroshima and Nagasaki and his concern that \"some of the technological creations we had developed with the best intentions might have disastrous consequences in the long run.\" ",
+            "image_path": "images/samples/the_humanoids.jpg"
           },
           {
             "name": "Foundation",
-            "description": "",
-            "image_path": ""
+            "description": "Foundation is a cycle of five interrelated short stories, first published as a single book by Gnome Press in 1951. Collectively they tell the story of the Foundation, an institute to preserve the best of galactic civilization after the collapse of the Galactic Empire.",
+            "image_path": "images/samples/foundation.jpg"
           }
         ]
       }
