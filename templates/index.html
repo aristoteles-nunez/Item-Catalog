@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container-fluid" style="margin: auto; width: 100%;">
     {%- for item in items -%}
-        <div class="col-sm-6 col-md-4 col-lg-3  item-tile text-center img-rounded" data-category-url="{{ url_for('get_item', category_id=item.category_id, item_id=item.id ) }}" style="height: 170px; width: 170px;">
+        <div class="col-sm-6 col-md-4 col-lg-3  item-tile text-center img-rounded" data-category-url="{{ url_for('get_item_by_category', category_id=item.category_id, item_id=item.id ) }}" style="height: 170px; width: 170px;">
             <strong>{{item.name}}</strong>
             {%- if item.image_path and item.image_path|length > 0 -%}
                 <div style="width:140px; height: 140px; overflow: hidden;">

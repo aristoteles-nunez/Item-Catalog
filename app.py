@@ -21,7 +21,25 @@ def index():
                            active_category=0, logged_in=False)
 
 
-@app.route('/categories/<category_id>/')
+@app.route('/json/categories/')
+def json_api_categories():
+    categories = db_session.query(Category).order_by(Category.name).all()
+    return jsonify(categories=[r.serialize for r in categories])
+
+
+@app.route('/json/items/')
+def json_api_items():
+    items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
+    return jsonify(items=[r.serialize for r in items])
+
+
+@app.route('/json/items/<item_id>/')
+def json_api_get_item(item_id):
+    item = db_session.query(Item).filter_by(id=item_id).one()
+    return jsonify(item.serialize)
+
+
+@app.route('/categories/<category_id>/items/')
 def get_category(category_id):
     categories = db_session.query(Category).order_by(Category.name).all()
     items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
@@ -29,24 +47,24 @@ def get_category(category_id):
                            items=items, logged_in=False)
 
 
-@app.route('/categories/json/')
-def categories_json():
-    categories = db_session.query(Category).order_by(Category.name).all()
-    return jsonify(categories=[r.serialize for r in categories])
+@app.route('/json/categories/<category_id>/items/')
+def json_api_get_category(category_id):
+    items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
+    return jsonify(items=[r.serialize for r in items])
 
 
 @app.route('/categories/<category_id>/items/<item_id>/')
-def get_item(category_id, item_id):
+def get_item_by_category(category_id, item_id):
     categories = db_session.query(Category).order_by(Category.name).all()
-    item = db_session.query(Item).filter_by(id=item_id).one()
+    item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     return render_template('items.html', categories=categories, active_category=int(category_id),
                            item=item, logged_in=False)
 
 
-@app.route('/items/json/')
-def items_json():
-    items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
-    return jsonify(items=[r.serialize for r in items])
+@app.route('/json/categories/<category_id>/items/<item_id>/')
+def json_api_get_item_by_category(category_id, item_id):
+    item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+    return jsonify(item.serialize)
 
 
 if __name__ == '__main__':
