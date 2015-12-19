@@ -61,6 +61,15 @@ def get_item_by_category(category_id, item_id):
                            item=item, logged_in=False)
 
 
+@app.route('/categories/<category_id>/items/<item_id>/delete/', methods=['POST'])
+def delete_item(category_id, item_id):
+    item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+    db_session.delete(item)
+    db_session.commit()
+    flash("Item '{}' successfully deleted".format(item.name))
+    return "success"
+
+
 @app.route('/json/categories/<category_id>/items/<item_id>/')
 def json_api_get_item_by_category(category_id, item_id):
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()

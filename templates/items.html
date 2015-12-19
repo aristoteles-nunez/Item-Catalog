@@ -76,10 +76,31 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Yes</button>
+        <button type="button" id="itemDeleteBtn" class="btn btn-primary">Yes</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<script type="text/javascript" charset="utf-8">
+    // make Post request
+    $(document).on('click', '#itemDeleteBtn', function (event) {
+        //var url_go = $(this).attr('data-category-url')
+        console.log('Deleting Item...');
+        $.ajax({
+            type: 'POST',
+            url: '{{ url_for("delete_item", category_id=item.category_id, item_id=item.id) }}',
+            processData: false,
+            contentType: 'application/octet-stream; charset=utf-8',
+            success: function(result) {
+                if (result) {
+                    setTimeout(function() {
+                    window.location.href = "{{url_for('index')}}";
+                    }, 0);
+                }
+            }
+          });
+    });
+</script>
 
 {% endblock %}
