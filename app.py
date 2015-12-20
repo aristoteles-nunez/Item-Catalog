@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, request, redirect, flash, jso
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
-from appForms import DeleteItemForm
+from appForms import DeleteItemForm, EditItemForm
 __author__ = 'Sotsir'
 
 app = Flask(__name__)
@@ -73,6 +73,22 @@ def delete_item(category_id, item_id):
     else:
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('delete_item.html', categories=categories, active_category=int(category_id),
+                               item=item, form=form, logged_in=False)
+
+
+@app.route('/categories/<category_id>/items/<item_id>/edit/', methods=['GET', 'POST'])
+def edit_item(category_id, item_id):
+    item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+    form = EditItemForm(request.form, item)
+    if form.validate_on_submit():
+        form.populate_obj(item)
+        db_session.add(item)
+        db_session.commit()
+        flash("Item '{}' successfully edited".format(item.name))
+        return redirect(url_for('get_item_by_category', category_id=item.category_id, item_id=item_id))
+    else:
+        categories = db_session.query(Category).order_by(Category.name).all()
+        return render_template('edit_item.html', categories=categories, active_category=int(category_id),
                                item=item, form=form, logged_in=False)
 
 
