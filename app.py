@@ -1,10 +1,8 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, session as login_session
-from flask_wtf import Form
-from wtforms import SubmitField, validators
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
-
+from appForms import DeleteItemForm
 __author__ = 'Sotsir'
 
 app = Flask(__name__)
@@ -13,10 +11,6 @@ engine = create_engine('sqlite:///item_catalog.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 db_session = DBSession()
-
-
-class DeleteItemForm(Form):
-    delete = SubmitField('submitDelete')
 
 
 @app.route('/')
