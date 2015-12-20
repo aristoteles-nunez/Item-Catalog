@@ -1,4 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, session as login_session
+from flask_wtf import Form
+from wtforms import SubmitField, validators
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
@@ -11,6 +13,10 @@ engine = create_engine('sqlite:///item_catalog.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 db_session = DBSession()
+
+
+class DeleteItemForm(Form):
+    delete = SubmitField('submitDelete')
 
 
 @app.route('/')
@@ -61,13 +67,19 @@ def get_item_by_category(category_id, item_id):
                            item=item, logged_in=False)
 
 
-@app.route('/categories/<category_id>/items/<item_id>/delete/', methods=['POST'])
+@app.route('/categories/<category_id>/items/<item_id>/delete/', methods=['GET', 'POST'])
 def delete_item(category_id, item_id):
+    form = DeleteItemForm()
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
-    db_session.delete(item)
-    db_session.commit()
-    flash("Item '{}' successfully deleted".format(item.name))
-    return "success"
+    if form.validate_on_submit():
+        db_session.delete(item)
+        db_session.commit()
+        flash("Item '{}' successfully deleted".format(item.name))
+        return redirect(url_for('index'))
+    else:
+        categories = db_session.query(Category).order_by(Category.name).all()
+        return render_template('delete_item.html', categories=categories, active_category=int(category_id),
+                               item=item, form=form, logged_in=False)
 
 
 @app.route('/json/categories/<category_id>/items/<item_id>/')

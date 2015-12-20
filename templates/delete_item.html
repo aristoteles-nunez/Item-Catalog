@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="panel panel-info">
+    <div class="panel-heading">{{item.name}}</div>
+    <div class="panel-body">
+        <p>Do you really want to delete '{{item.name}}' item?</p>
+    </div>
+    <div class="panel-footer">
+        <form action="{{ url_for('delete_item', category_id=item.category_id, item_id=item.id ) }}" method = 'POST'>
+            {{ form.hidden_tag() }}
+            <a href="{{ url_for('get_item_by_category', category_id=item.category_id, item_id=item.id ) }}">
+                <button type="button" class="btn btn-default">Cancel</button>
+            </a>
+            <button type="submit" id="submitDelete" class="btn btn-primary">Delete</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
