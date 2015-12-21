@@ -30,7 +30,7 @@
             <a href="{{ url_for('get_item_by_category', category_id=item.category_id, item_id=item.id ) }}">
                 <button type="button" class="btn btn-default">Cancel</button>
             </a>
-            <button type="submit" id="submitEdit" name="Save" class="btn btn-primary">Save</button>
+            {{ form.save(class="btn btn-primary") }}
         </div>
     </form>
 </div>
