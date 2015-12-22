@@ -1,6 +1,9 @@
 # Item's catalog
+Project that display a set of categories with their respectives items.
 
 # Features
+* Edit / Delete each item
+* Avoid CSFR attacks on forms
 
 # What's included
 
