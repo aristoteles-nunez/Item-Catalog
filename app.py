@@ -16,7 +16,7 @@ db_session = DBSession()
 @app.route('/')
 def index():
     categories = db_session.query(Category).order_by(Category.name).all()
-    latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
+    latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).limit(15).all()
     return render_template('index.html', categories=categories, items=latest_items,
                            active_category=0, logged_in=False)
 
