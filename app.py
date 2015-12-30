@@ -1,4 +1,5 @@
 import os
+import shutil
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, session as login_session
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
@@ -21,6 +22,11 @@ def ensure_dir(file_name):
     dir = os.path.dirname(file_name)
     if not os.path.exists(dir):
         os.makedirs(dir)
+
+
+def delete_dir(dir_name):
+    if os.path.exists(dir_name):
+        shutil.rmtree(dir_name)
 
 
 @app.route('/')
@@ -76,6 +82,7 @@ def delete_item(category_id, item_id):
     form = DeleteItemForm()
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     if form.validate_on_submit():
+        delete_dir('static/images/uploads/' + str(item.id))
         db_session.delete(item)
         db_session.commit()
         flash("Item '{}' successfully deleted".format(item.name))
