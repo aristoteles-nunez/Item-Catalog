@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
 from werkzeug.utils import secure_filename
 from appForms import DeleteItemForm, EditItemForm, UploadImageForm
+import os
 
 
 __author__ = 'Sotsir'
@@ -14,6 +15,12 @@ engine = create_engine('sqlite:///item_catalog.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 db_session = DBSession()
+
+
+def ensure_dir(file_name):
+    dir = os.path.dirname(file_name)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
 
 
 @app.route('/')
@@ -107,7 +114,8 @@ def image_upload(item_id):
     item = db_session.query(Item).filter_by(id=item_id).one()
     categories = db_session.query(Category).order_by(Category.name).all()
     if form.validate_on_submit():
-        filename = 'images/' + secure_filename(form.photo.data.filename)
+        filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
+        ensure_dir('static/' + filename)
         form.photo.data.save('static/' + filename)
         item.image_path = filename
         db_session.add(item)
