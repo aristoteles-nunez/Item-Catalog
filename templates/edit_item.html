@@ -25,6 +25,18 @@
                     {%- endfor -%}
                 </select>
             </div>
+            <div class="form-group">
+                <label class="control-label">Image: </label>
+                <div style="width:140px;">
+                <a href="{{ url_for('image_upload', item_id=item.id ) }}" data-toggle="tooltip" data-placement="right" title="Click to change Image" >
+                    {%- if item.image_path and item.image_path|length > 0 -%}
+                        <img class="media-object" src="{{ url_for('static', filename=item.image_path) }}" width="140">
+                    {%- else -%}
+                        <img class="media-object" src="{{ url_for('static', filename='images/noimage.png') }}" width="140">
+                    {%- endif -%}
+                </a>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <a href="{{ url_for('get_item_by_category', category_id=item.category_id, item_id=item.id ) }}">
@@ -35,4 +47,9 @@
     </form>
 </div>
 
+<script type="text/javascript" charset="utf-8">
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
 {% endblock %}
