@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, request, redirect, flash, jso
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from appForms import DeleteItemForm, EditItemForm, UploadImageForm
 
 
