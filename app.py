@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
 from werkzeug.utils import secure_filename
-from appForms import DeleteItemForm, UploadImageForm, ItemForm
+from appForms import DeleteItemForm, ItemForm, CategoryForm
 
 
 __author__ = 'Sotsir'
@@ -135,6 +135,23 @@ def new_item(category_id):
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('new_item.html', categories=categories, active_category=int(category_id),
                                item=item, form=form, logged_in=False)
+
+
+@app.route('/categories/new/', methods=['GET', 'POST'])
+def new_category():
+    form = CategoryForm()
+    category = Category()
+    category.name = "New item"
+    if form.validate_on_submit():
+        form.populate_obj(category)
+        db_session.add(category)
+        db_session.commit()
+        flash("Category '{}' successfully added".format(category.name))
+        return redirect(url_for('get_category', category_id=category.id))
+    else:
+        categories = db_session.query(Category).order_by(Category.name).all()
+        return render_template('new_category.html', categories=categories, active_category=-1,
+                               form=form, logged_in=False)
 
 
 @app.route('/json/categories/<category_id>/items/<item_id>/')

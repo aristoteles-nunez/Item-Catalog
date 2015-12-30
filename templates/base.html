@@ -51,6 +51,14 @@
     <br>
     <div class="row">
         <div class="col-sm-2 col-md-3 ">
+            <nav class="nav nav-pills">
+              <div class="container-fluid">
+                  <ul class="nav navbar-nav">
+                      <li><a href="{{ url_for('new_category') }}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New category</a></li>
+                  </ul>
+              </div>
+            </nav>
+
             <div class="navbar-default" role="navigation">
                 <ul class="nav nav-pills nav-stacked" id="side-menu" style="margin: auto; width: 95%;">
                     <li {% if active_category == 0 %} class="active" {% endif %} >
@@ -92,7 +100,6 @@
                         {%- endfor -%}
                     </div>
                 {%- endif -%}
-
                 {% block content %}
                 {% endblock %}
             </div>

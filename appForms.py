@@ -17,8 +17,6 @@ class DeleteItemForm(Form):
     delete = SubmitField('Delete')
 
 
-class UploadImageForm(Form):
-    photo = FileField('Image for item', validators=[
-        FileRequired(),
-        FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Format not supported')])
-    send = SubmitField('Upload new image')
+class CategoryForm(Form):
+    name = StringField('Name', validators=[Length(min=2, message="Name too short"), DataRequired()])
+    save = SubmitField('Save')
