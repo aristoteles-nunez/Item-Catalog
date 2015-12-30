@@ -1,10 +1,10 @@
+import os
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, session as login_session
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
 from werkzeug.utils import secure_filename
-from appForms import DeleteItemForm, EditItemForm, UploadImageForm
-import os
+from appForms import DeleteItemForm, EditItemForm, UploadImageForm, ItemForm
 
 
 __author__ = 'Sotsir'
@@ -99,6 +99,29 @@ def edit_item(category_id, item_id):
     else:
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('edit_item.html', categories=categories, active_category=int(category_id),
+                               item=item, form=form, logged_in=False)
+
+
+@app.route('/categories/<category_id>/items/new/', methods=['GET', 'POST'])
+def new_item(category_id):
+    form = ItemForm()
+    item = Item()
+    item.name = "New item"
+    if form.validate_on_submit():
+        form.populate_obj(item)
+        db_session.add(item)
+        if len(secure_filename(form.photo.data.filename)) > 0:
+            filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
+            ensure_dir('static/' + filename)
+            form.photo.data.save('static/' + filename)
+            item.image_path = filename
+            db_session.add(item)
+        db_session.commit()
+        flash("Item '{}' successfully added".format(item.name))
+        return redirect(url_for('get_item_by_category', category_id=item.category_id, item_id=item.id))
+    else:
+        categories = db_session.query(Category).order_by(Category.name).all()
+        return render_template('new_item.html', categories=categories, active_category=int(category_id),
                                item=item, form=form, logged_in=False)
 
 
