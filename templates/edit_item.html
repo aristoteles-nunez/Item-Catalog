@@ -4,16 +4,16 @@
 
 <div class="panel panel-info">
     <div class="panel-heading"><strong>Editing </strong> {{item.name}}</div>
-    <form action="{{ url_for('edit_item', category_id=item.category_id, item_id=item.id ) }}" method='POST'>
+    <form action="{{ url_for('edit_item', category_id=item.category_id, item_id=item.id ) }}" method='POST' enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <div class="panel-body">
             <div {% if form.name.errors %} class="form-group has-error has-feedback" {% else %} class="form-group" {% endif %} >
                 {{ form.name.label(class="control-label") }}:
-                {{ form.name(class="form-control")}}
+                {{ form.name(class="form-control", value=item.name)}}
             </div>
             <div class="form-group">
                 {{ form.description.label(class="control-label") }}:
-                {{ form.description(class="form-control", style="height:120px;") }}
+                <textarea class="form-control" id="description" name="description" style="height:120px;">{{item.description}}</textarea>
             </div>
             <div class="form-group">
                 {{ form.category_id.label(class="control-label") }}:
@@ -27,14 +27,13 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Image: </label>
-                <div style="width:140px;">
-                <a href="{{ url_for('image_upload', item_id=item.id ) }}" data-toggle="tooltip" data-placement="right" title="Click to change Image" >
+                {{ form.photo(style="height:30px;") }}
+                <div style="width:140px;" data-toggle="tooltip" data-placement="right" title="Select new file to replace actual image">
                     {%- if item.image_path and item.image_path|length > 0 -%}
                         <img class="media-object" src="{{ url_for('static', filename=item.image_path) }}" width="140">
                     {%- else -%}
                         <img class="media-object" src="{{ url_for('static', filename='images/noimage.png') }}" width="140">
                     {%- endif -%}
-                </a>
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
 from werkzeug.utils import secure_filename
-from appForms import DeleteItemForm, EditItemForm, UploadImageForm, ItemForm
+from appForms import DeleteItemForm, UploadImageForm, ItemForm
 
 
 __author__ = 'Sotsir'
@@ -89,9 +89,14 @@ def delete_item(category_id, item_id):
 @app.route('/categories/<category_id>/items/<item_id>/edit/', methods=['GET', 'POST'])
 def edit_item(category_id, item_id):
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
-    form = EditItemForm(request.form, item)
+    form = ItemForm()
     if form.validate_on_submit():
         form.populate_obj(item)
+        if len(secure_filename(form.photo.data.filename)) > 0:
+            filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
+            ensure_dir('static/' + filename)
+            form.photo.data.save('static/' + filename)
+            item.image_path = filename
         db_session.add(item)
         db_session.commit()
         flash("Item '{}' successfully edited".format(item.name))
@@ -129,24 +134,6 @@ def new_item(category_id):
 def json_api_get_item_by_category(category_id, item_id):
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     return jsonify(item.serialize)
-
-
-@app.route('/items/<item_id>/upload/', methods=['GET', 'POST'])
-def image_upload(item_id):
-    form = UploadImageForm()
-    item = db_session.query(Item).filter_by(id=item_id).one()
-    categories = db_session.query(Category).order_by(Category.name).all()
-    if form.validate_on_submit():
-        filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
-        ensure_dir('static/' + filename)
-        form.photo.data.save('static/' + filename)
-        item.image_path = filename
-        db_session.add(item)
-        db_session.commit()
-        flash("Image for '{}' successfully uploaded".format(item.name))
-        return redirect(url_for('edit_item', category_id=item.category_id, item_id=item_id))
-    return render_template('upload.html', categories=categories, active_category=int(item.category_id),
-                           form=form, item=item, logged_in=False)
 
 
 if __name__ == '__main__':

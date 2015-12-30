@@ -30,7 +30,9 @@
             </div>
         </div>
         <div class="panel-footer">
-            <button type="button" class="btn btn-default" onclick="history.back(-1)">Cancel</button>
+            <a href="{{ url_for('get_category', category_id=active_category ) }}">
+                <button type="button" class="btn btn-default">Cancel</button>
+            </a>
             {{ form.save(class="btn btn-primary") }}
         </div>
     </form>
