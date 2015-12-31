@@ -13,7 +13,7 @@ class ItemForm(Form):
     save = SubmitField('Save')
 
 
-class DeleteItemForm(Form):
+class DeleteForm(Form):
     delete = SubmitField('Delete')
 
 

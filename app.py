@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
 from werkzeug.utils import secure_filename
-from appForms import DeleteItemForm, ItemForm, CategoryForm
+from appForms import DeleteForm, ItemForm, CategoryForm
 
 
 __author__ = 'Sotsir'
@@ -32,7 +32,7 @@ def delete_dir(dir_name):
 @app.route('/')
 def index():
     categories = db_session.query(Category).order_by(Category.name).all()
-    latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).limit(15).all()
+    latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).limit(25).all()
     return render_template('index.html', categories=categories, items=latest_items,
                            active_category=0, logged_in=False)
 
@@ -79,7 +79,7 @@ def get_item_by_category(category_id, item_id):
 
 @app.route('/categories/<category_id>/items/<item_id>/delete/', methods=['GET', 'POST'])
 def delete_item(category_id, item_id):
-    form = DeleteItemForm()
+    form = DeleteForm()
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     if form.validate_on_submit():
         delete_dir('static/images/uploads/' + str(item.id))
@@ -123,6 +123,7 @@ def new_item(category_id):
         form.populate_obj(item)
         db_session.add(item)
         if len(secure_filename(form.photo.data.filename)) > 0:
+            db_session.flush()
             filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
             ensure_dir('static/' + filename)
             form.photo.data.save('static/' + filename)
@@ -152,6 +153,24 @@ def new_category():
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('new_category.html', categories=categories, active_category=-1,
                                form=form, logged_in=False)
+
+
+@app.route('/categories/<category_id>/delete/', methods=['GET', 'POST'])
+def delete_category(category_id):
+    category = db_session.query(Category).filter_by(id=category_id).one()
+    form = DeleteForm()
+    if form.validate_on_submit():
+        items = db_session.query(Item).filter_by(category_id=category_id).all()
+        for item in items:
+            delete_dir('static/images/uploads/' + str(item.id))
+        db_session.delete(category)
+        db_session.commit()
+        flash("Category '{}' successfully deleted".format(category.name))
+        return redirect(url_for('index'))
+    else:
+        categories = db_session.query(Category).order_by(Category.name).all()
+        return render_template('delete_category.html', categories=categories, active_category=int(category_id),
+                               category=category, form=form, logged_in=False)
 
 
 @app.route('/json/categories/<category_id>/items/<item_id>/')
