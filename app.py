@@ -151,7 +151,25 @@ def new_category():
         return redirect(url_for('get_category', category_id=category.id))
     else:
         categories = db_session.query(Category).order_by(Category.name).all()
-        return render_template('new_category.html', categories=categories, active_category=-1,
+        return render_template('new_category.html', categories=categories,
+                               active_category=-1,
+                               form=form, logged_in=False)
+
+
+@app.route('/categories/<category_id>/edit/', methods=['GET', 'POST'])
+def edit_category(category_id):
+    category = db_session.query(Category).filter_by(id=category_id).one()
+    form = CategoryForm(request.form, category)
+    if form.validate_on_submit():
+        form.populate_obj(category)
+        db_session.add(category)
+        db_session.commit()
+        flash("Category '{}' successfully updated".format(category.name))
+        return redirect(url_for('get_category', category_id=category.id))
+    else:
+        categories = db_session.query(Category).order_by(Category.name).all()
+        return render_template('edit_category.html', categories=categories,
+                               active_category=category_id,
                                form=form, logged_in=False)
 
 
