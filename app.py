@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from models import Base, Category, User, Item
 from werkzeug.utils import secure_filename
 from appForms import DeleteForm, ItemForm, CategoryForm
+from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 
 
 __author__ = 'Sotsir'
@@ -35,24 +36,6 @@ def index():
     latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).limit(25).all()
     return render_template('index.html', categories=categories, items=latest_items,
                            active_category=0, logged_in=False)
-
-
-@app.route('/json/categories/')
-def json_api_categories():
-    categories = db_session.query(Category).order_by(Category.name).all()
-    return jsonify(categories=[r.serialize for r in categories])
-
-
-@app.route('/json/items/')
-def json_api_items():
-    items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
-    return jsonify(items=[r.serialize for r in items])
-
-
-@app.route('/json/items/<item_id>/')
-def json_api_get_item(item_id):
-    item = db_session.query(Item).filter_by(id=item_id).one()
-    return jsonify(item.serialize)
 
 
 @app.route('/categories/<category_id>/items/')
@@ -191,10 +174,52 @@ def delete_category(category_id):
                                category=category, form=form, logged_in=False)
 
 
+@app.route('/json/categories/')
+def json_api_categories():
+    categories = db_session.query(Category).order_by(Category.name).all()
+    return jsonify(categories=[r.serialize for r in categories])
+
+
+@app.route('/json/items/')
+def json_api_items():
+    items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
+    return jsonify(items=[r.serialize for r in items])
+
+
+@app.route('/json/items/<item_id>/')
+def json_api_get_item(item_id):
+    item = db_session.query(Item).filter_by(id=item_id).one()
+    return jsonify(item.serialize)
+
+
 @app.route('/json/categories/<category_id>/items/<item_id>/')
 def json_api_get_item_by_category(category_id, item_id):
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     return jsonify(item.serialize)
+
+
+@app.route('/xml/categories/')
+def xml_api_categories():
+    categories = db_session.query(Category).order_by(Category.name).all()
+    data = Element('categories')
+    for category in categories:
+        id = SubElement(data, 'id')
+        id.text = str(category.id)
+        name = SubElement(data, 'name')
+        name.text = category.name
+        items = SubElement(data, 'items')
+        for item in category.items:
+            item_id = SubElement(items, 'id')
+            item_id.text = str(item.id)
+            item_name = SubElement(items, 'name')
+            item_name.text = item.name
+            item_description = SubElement(items, 'description')
+            item_description.text = item.description
+            item_image = SubElement(items, 'image')
+            item_image.text = item.image_path
+            item_modified_date = SubElement(items, 'modified_date')
+            item_modified_date.text = str(item.modified_date)
+    return app.response_class(tostring(data), mimetype='application/xml')
 
 
 if __name__ == '__main__':
