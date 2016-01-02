@@ -110,40 +110,47 @@ def gdisconnect():
 
 @app.route('/')
 def index():
+    logged_in = 'username' in login_session
     categories = db_session.query(Category).order_by(Category.name).all()
     latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).limit(25).all()
+    return render_template('index.html', categories=categories, items=latest_items,
+                           active_category=0, logged_in=logged_in)
 
+
+@app.route('/login/')
+def login():
+    logged_in = 'username' in login_session
+    if logged_in:
+        flash("User already logged", category="info")
+        return redirect(url_for('index'))
+    categories = db_session.query(Category).order_by(Category.name).all()
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
     login_session['state'] = state
-
-    return render_template('index.html', categories=categories, items=latest_items,
-                           active_category=0, logged_in=('username' in login_session), STATE=state, CLIENT_ID=CLIENT_ID)
+    return render_template('login.html', categories=categories,
+                           active_category=-1, logged_in=logged_in, STATE=state, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/<category_id>/items/')
 def get_category(category_id):
+    logged_in = 'username' in login_session
     categories = db_session.query(Category).order_by(Category.name).all()
     items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
     return render_template('index.html', categories=categories, active_category=int(category_id),
-                           items=items, logged_in=False)
-
-
-@app.route('/json/categories/<category_id>/items/')
-def json_api_get_category(category_id):
-    items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
-    return jsonify(items=[r.serialize for r in items])
+                           items=items, logged_in=logged_in, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/<category_id>/items/<item_id>/')
 def get_item_by_category(category_id, item_id):
+    logged_in = 'username' in login_session
     categories = db_session.query(Category).order_by(Category.name).all()
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     return render_template('items.html', categories=categories, active_category=int(category_id),
-                           item=item, logged_in=False)
+                           item=item, logged_in=logged_in, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/<category_id>/items/<item_id>/delete/', methods=['GET', 'POST'])
 def delete_item(category_id, item_id):
+    logged_in = 'username' in login_session
     form = DeleteForm()
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     if form.validate_on_submit():
@@ -155,11 +162,12 @@ def delete_item(category_id, item_id):
     else:
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('delete_item.html', categories=categories, active_category=int(category_id),
-                               item=item, form=form, logged_in=False)
+                               item=item, form=form, logged_in=logged_in, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/<category_id>/items/<item_id>/edit/', methods=['GET', 'POST'])
 def edit_item(category_id, item_id):
+    logged_in = 'username' in login_session
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     form = ItemForm()
     if form.validate_on_submit():
@@ -176,11 +184,12 @@ def edit_item(category_id, item_id):
     else:
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('edit_item.html', categories=categories, active_category=int(category_id),
-                               item=item, form=form, logged_in=False)
+                               item=item, form=form, logged_in=logged_in, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/<category_id>/items/new/', methods=['GET', 'POST'])
 def new_item(category_id):
+    logged_in = 'username' in login_session
     form = ItemForm()
     item = Item()
     item.name = "New item"
@@ -200,11 +209,12 @@ def new_item(category_id):
     else:
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('new_item.html', categories=categories, active_category=int(category_id),
-                               item=item, form=form, logged_in=False)
+                               item=item, form=form, logged_in=logged_in, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/new/', methods=['GET', 'POST'])
 def new_category():
+    logged_in = 'username' in login_session
     form = CategoryForm()
     category = Category()
     category.name = "New item"
@@ -218,11 +228,12 @@ def new_category():
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('new_category.html', categories=categories,
                                active_category=-1,
-                               form=form, logged_in=False)
+                               form=form, logged_in=logged_in, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/<category_id>/edit/', methods=['GET', 'POST'])
 def edit_category(category_id):
+    logged_in = 'username' in login_session
     category = db_session.query(Category).filter_by(id=category_id).one()
     form = CategoryForm(request.form, category)
     if form.validate_on_submit():
@@ -235,11 +246,12 @@ def edit_category(category_id):
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('edit_category.html', categories=categories,
                                active_category=category_id,
-                               form=form, logged_in=False)
+                               form=form, logged_in=logged_in, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/<category_id>/delete/', methods=['GET', 'POST'])
 def delete_category(category_id):
+    logged_in = 'username' in login_session
     category = db_session.query(Category).filter_by(id=category_id).one()
     form = DeleteForm()
     if form.validate_on_submit():
@@ -253,13 +265,19 @@ def delete_category(category_id):
     else:
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('delete_category.html', categories=categories, active_category=int(category_id),
-                               category=category, form=form, logged_in=False)
+                               category=category, form=form, logged_in=logged_in, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/json/categories/')
 def json_api_categories():
     categories = db_session.query(Category).order_by(Category.name).all()
     return jsonify(categories=[r.serialize for r in categories])
+
+
+@app.route('/json/categories/<category_id>/items/')
+def json_api_get_category(category_id):
+    items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
+    return jsonify(items=[r.serialize for r in items])
 
 
 @app.route('/json/items/')
