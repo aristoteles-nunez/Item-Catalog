@@ -206,6 +206,7 @@ def new_item(category_id):
     item.name = "New item"
     if form.validate_on_submit():
         form.populate_obj(item)
+        item.user_id = login_session["user_id"]
         db_session.add(item)
         if len(secure_filename(form.photo.data.filename)) > 0:
             db_session.flush()
@@ -234,6 +235,7 @@ def new_category():
     category.name = "New item"
     if form.validate_on_submit():
         form.populate_obj(category)
+        category.user_id = login_session["user_id"]
         db_session.add(category)
         db_session.commit()
         flash("Category '{}' successfully added".format(category.name))
