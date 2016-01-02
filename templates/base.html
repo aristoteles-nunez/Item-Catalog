@@ -10,7 +10,9 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    {%- if not logged_in -%}
     <script src="{{ url_for('static', filename='js/client_platform.js') }}?onload=start" async defer></script>
+    {%- endif -%}
     <style type="text/css" media="screen">
         .item-tile:hover {
             cursor:pointer;
@@ -81,7 +83,7 @@
                     {%- with messages = get_flashed_messages(with_categories=True) -%}
                         {%- if messages -%}
                             {%- for category_message, message in messages -%}
-                            <div class="alert {% if category_message == 'message' %} alert-success {% else %} alert-danger {% endif %} alert-dismissible" role="alert">
+                            <div class="alert {% if category_message == 'message' %} alert-success {% elif category_message == 'info'%} alert-info {% else %} alert-danger {% endif %} alert-dismissible" role="alert">
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 {{ message }}
                             </div>
