@@ -4,6 +4,13 @@
 <div class="panel panel-info">
     <div class="panel-heading">Authenticate with the following services:</div>
     <div class="panel-body">
+        <div id="oauthProccess"  style="display: none">
+            <p><strong>Processing...</strong></p>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                </div>
+            </div>
+        </div>
         <div class="navbar-brand " id="signInButton">
             <span class="g-signin"
                   data-scope="openid email"
@@ -15,10 +22,11 @@
                   data-approvalprompt="force">
             </span>
         </div>
+        <div id="result"></div>
     </div>
 </div>
 
-<div id="result"></div>
+
 
 {% if not logged_in %}
 <script>
@@ -26,6 +34,7 @@ function signInCallback(authResult) {
   if (authResult['code']) {
     // Hide the sign-in button now that the user is authorized
     $('#signInButton').attr('style', 'display: none');
+    $('#oauthProccess').attr('style', 'display: block');
 
     // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
     $.ajax({
