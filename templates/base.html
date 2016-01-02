@@ -10,6 +10,7 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
     <style type="text/css" media="screen">
         .item-tile:hover {
             cursor:pointer;
@@ -34,13 +35,21 @@
             </div>
             <div class="navbar-header navbar-right">
                 {% if logged_in %}
-                    <a class="navbar-brand " href="{{ url_for('index') }}">
+                    <a class="navbar-brand " href="{{ url_for('gdisconnect') }}">
                         Log out
                     </a>
                 {% else %}
-                    <a class="navbar-brand " href="{{ url_for('index') }}">
-                        Log in
-                    </a>
+                    <div class="navbar-brand " id="signInButton">
+                        <span class="g-signin"
+                              data-scope="openid email"
+                              data-clientid="{{CLIENT_ID}}"
+                              data-redirecturi="postmessage"
+                              data-accesstype="offline"
+                              data-cookiepolicy="single_host_origin"
+                              data-callback="signInCallback"
+                              data-approvalprompt="force">
+                        </span>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -107,6 +116,38 @@
         </div>
     </div>
 
+<div id="result"></div>
+
+{% if not logged_in %}
+<script>
+function signInCallback(authResult) {
+  if (authResult['code']) {
+    // Hide the sign-in button now that the user is authorized
+    $('#signInButton').attr('style', 'display: none');
+
+    // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+    $.ajax({
+      type: 'POST',
+      url: '/gconnect?state={{STATE}}',
+      processData: false,
+      data: authResult['code'],
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+            window.location.href = "{{ url_for('index') }}";
+        } else if (authResult['error']) {
+            console.log('There was an error: ' + authResult['error']);
+        } else {
+            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+        }
+      }
+    });
+  }
+}
+
+</script>
+{%- endif -%}
 
 </body>
 </html>
