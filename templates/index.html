@@ -2,7 +2,7 @@
 
 
 {% block content %}
-{%- if active_category > 0 -%}
+{%- if logged_in and active_category > 0 -%}
 <nav class="nav nav-pills">
   <div class="container-fluid">
       <ul class="nav navbar-nav">

@@ -36,18 +36,18 @@
                 </a>
             </div>
             <div class="navbar-header navbar-right">
-                {% if logged_in %}
+                {%- if logged_in -%}
                     <span class="navbar-brand"  data-toggle="tooltip" data-placement="bottom" title="Logged as {{login_session['username']}}">
                         <img src="{{login_session['picture']}}"  style = "margin-top: -5px; width: 32px; height: 32px;border-radius: 16px;-webkit-border-radius: 16px;-moz-border-radius: 16px;">
                     </span>
                     <a class="navbar-brand " href="{{ url_for('gdisconnect') }}">
                         Log out
                     </a>
-                {% else %}
+                {%- else -%}
                     <a class="navbar-brand " href="{{ url_for('login') }}">
                         Login
                     </a>
-                {% endif %}
+                {%- endif -%}
             </div>
         </div>
 
@@ -57,6 +57,7 @@
     <br>
     <div class="row">
         <div class="col-sm-2 col-md-3 ">
+            {%- if logged_in -%}
             <nav class="nav nav-pills">
               <div class="container-fluid">
                   <ul class="nav navbar-nav">
@@ -64,7 +65,7 @@
                   </ul>
               </div>
             </nav>
-
+            {%- endif -%}
             <div class="navbar-default" role="navigation">
                 <ul class="nav nav-pills nav-stacked" id="side-menu" style="margin: auto; width: 95%;">
                     <li {% if active_category == 0 %} class="active" {% endif %} >

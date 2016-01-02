@@ -150,6 +150,9 @@ def get_item_by_category(category_id, item_id):
 @app.route('/categories/<category_id>/items/<item_id>/delete/', methods=['GET', 'POST'])
 def delete_item(category_id, item_id):
     logged_in = 'username' in login_session
+    if not logged_in:
+        flash("You must be logged to perform this operation", category="error")
+        return redirect(url_for('index'))
     form = DeleteForm()
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     if form.validate_on_submit():
@@ -167,6 +170,9 @@ def delete_item(category_id, item_id):
 @app.route('/categories/<category_id>/items/<item_id>/edit/', methods=['GET', 'POST'])
 def edit_item(category_id, item_id):
     logged_in = 'username' in login_session
+    if not logged_in:
+        flash("You must be logged to perform this operation", category="error")
+        return redirect(url_for('index'))
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     form = ItemForm()
     if form.validate_on_submit():
@@ -189,6 +195,9 @@ def edit_item(category_id, item_id):
 @app.route('/categories/<category_id>/items/new/', methods=['GET', 'POST'])
 def new_item(category_id):
     logged_in = 'username' in login_session
+    if not logged_in:
+        flash("You must be logged to perform this operation", category="error")
+        return redirect(url_for('index'))
     form = ItemForm()
     item = Item()
     item.name = "New item"
@@ -214,6 +223,9 @@ def new_item(category_id):
 @app.route('/categories/new/', methods=['GET', 'POST'])
 def new_category():
     logged_in = 'username' in login_session
+    if not logged_in:
+        flash("You must be logged to perform this operation", category="error")
+        return redirect(url_for('index'))
     form = CategoryForm()
     category = Category()
     category.name = "New item"
@@ -233,6 +245,9 @@ def new_category():
 @app.route('/categories/<category_id>/edit/', methods=['GET', 'POST'])
 def edit_category(category_id):
     logged_in = 'username' in login_session
+    if not logged_in:
+        flash("You must be logged to perform this operation", category="error")
+        return redirect(url_for('index'))
     category = db_session.query(Category).filter_by(id=category_id).one()
     form = CategoryForm(request.form, category)
     if form.validate_on_submit():
@@ -251,6 +266,9 @@ def edit_category(category_id):
 @app.route('/categories/<category_id>/delete/', methods=['GET', 'POST'])
 def delete_category(category_id):
     logged_in = 'username' in login_session
+    if not logged_in:
+        flash("You must be logged to perform this operation", category="error")
+        return redirect(url_for('index'))
     category = db_session.query(Category).filter_by(id=category_id).one()
     form = DeleteForm()
     if form.validate_on_submit():
