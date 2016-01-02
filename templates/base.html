@@ -37,6 +37,9 @@
             </div>
             <div class="navbar-header navbar-right">
                 {% if logged_in %}
+                    <span class="navbar-brand"  data-toggle="tooltip" data-placement="bottom" title="Logged as {{login_session['username']}}">
+                        <img src="{{login_session['picture']}}"  style = "margin-top: -5px; width: 32px; height: 32px;border-radius: 16px;-webkit-border-radius: 16px;-moz-border-radius: 16px;">
+                    </span>
                     <a class="navbar-brand " href="{{ url_for('gdisconnect') }}">
                         Log out
                     </a>
@@ -109,5 +112,11 @@
 
         </div>
     </div>
+<script type="text/javascript" charset="utf-8">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
 </body>
 </html>
