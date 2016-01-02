@@ -147,7 +147,7 @@ def get_item_by_category(category_id, item_id):
                            item=item, logged_in=logged_in, login_session=login_session)
 
 
-@app.route('/categories/<category_id>/items/<item_id>/delete/', methods=['GET', 'POST'])
+@app.route('/categories/<int:category_id>/items/<item_id>/delete/', methods=['GET', 'POST'])
 def delete_item(category_id, item_id):
     logged_in = 'username' in login_session
     if not logged_in:
@@ -160,7 +160,10 @@ def delete_item(category_id, item_id):
         db_session.delete(item)
         db_session.commit()
         flash("Item '{}' successfully deleted".format(item.name))
-        return redirect(url_for('index'))
+        if category_id > 0:
+            return redirect(url_for('get_category', category_id=category_id))
+        else:
+            return redirect(url_for('index'))
     else:
         categories = db_session.query(Category).order_by(Category.name).all()
         return render_template('delete_item.html', categories=categories, active_category=int(category_id),
