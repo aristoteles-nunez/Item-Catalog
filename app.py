@@ -38,6 +38,26 @@ def delete_dir(dir_name):
     if os.path.exists(dir_name):
         shutil.rmtree(dir_name)
 
+@app.route('/gdisconnect')
+def gdisconnect():
+    if 'access_token' not in login_session:
+        flash("Current user not connected.", "error")
+        return redirect(url_for('index'))
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    if result['status'] == '200':
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        flash("Successfully disconnected.")
+        return redirect(url_for('index'))
+    else:
+        flash("Failed to revoke token for given user", "error")
+        return redirect(url_for('index'))
+
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -85,27 +105,6 @@ def gconnect():
     login_session['user_id'] = user_id
     flash("You are now logged in as %s" % login_session['username'])
     return "success"
-
-
-@app.route('/gdisconnect')
-def gdisconnect():
-    if 'access_token' not in login_session:
-        flash("Current user not connected.", "error")
-        return redirect(url_for('index'))
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
-    h = httplib2.Http()
-    result = h.request(url, 'GET')[0]
-    if result['status'] == '200':
-        del login_session['access_token']
-        del login_session['gplus_id']
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
-        flash("Successfully disconnected.")
-        return redirect(url_for('index'))
-    else:
-        flash("Failed to revoke token for given user", "error")
-        return redirect(url_for('index'))
 
 
 @app.route('/')
