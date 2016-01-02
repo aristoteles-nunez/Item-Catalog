@@ -63,7 +63,8 @@ class Item(Base):
             'description': self.description,
             'modified_date': self.modified_date,
             'image_path': self.image_path,
-            'category_id': self.category_id
+            'category_id': self.category_id,
+            'user_id': self.user_id
         }
 
 engine = create_engine('sqlite:///item_catalog.db')
