@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 import datetime
+from sqlalchemy_utils import database_exists, create_database
 
 __author__ = 'Sotsir'
 
@@ -67,5 +68,7 @@ class Item(Base):
             'user_id': self.user_id
         }
 
-engine = create_engine('sqlite:///item_catalog.db')
+engine = create_engine('postgresql+psycopg2:///item_catalog',client_encoding='utf8')
+if not database_exists(engine.url):
+    create_database(engine.url)
 Base.metadata.create_all(engine)
