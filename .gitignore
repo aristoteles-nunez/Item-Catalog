@@ -1,3 +1,4 @@
+.vagrant/*
 .idea/*
 env/*
 item_catalog.db
