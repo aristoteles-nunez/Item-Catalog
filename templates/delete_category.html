@@ -11,7 +11,7 @@
             <p><strong>All contained items will be deleted</strong></p>
         </div>
         <div class="panel-footer">
-                <a href="{{ url_for('index') }}">
+                <a href="{{ url_for('get_category', category_id=category.id ) }}">
                     <button type="button" class="btn btn-default">Cancel</button>
                 </a>
                 {{ form.delete(class="btn btn-primary") }}
