@@ -133,9 +133,11 @@ def login():
 def get_category(category_id):
     logged_in = 'username' in login_session
     categories = db_session.query(Category).order_by(Category.name).all()
+    categpry = db_session.query(Category).filter_by(id=category_id).one()
     items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
     return render_template('index.html', categories=categories, active_category=int(category_id),
-                           items=items, logged_in=logged_in, login_session=login_session)
+                           items=items, logged_in=logged_in, login_session=login_session,
+                           category_owner=categpry.user_id)
 
 
 @app.route('/categories/<category_id>/items/<item_id>/')
@@ -147,14 +149,17 @@ def get_item_by_category(category_id, item_id):
                            item=item, logged_in=logged_in, login_session=login_session)
 
 
-@app.route('/categories/<int:category_id>/items/<item_id>/delete/', methods=['GET', 'POST'])
+@app.route('/categories/<int:category_id>/items/<int:item_id>/delete/', methods=['GET', 'POST'])
 def delete_item(category_id, item_id):
     logged_in = 'username' in login_session
     if not logged_in:
         flash("You must be logged to perform this operation", category="error")
         return redirect(url_for('index'))
-    form = DeleteForm()
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+    if login_session['user_id'] != item.user_id:
+        flash("You can only modify items created by you", category="error")
+        return redirect(url_for('get_item_by_category', category_id=category_id, item_id=item_id))
+    form = DeleteForm()
     if form.validate_on_submit():
         delete_dir('static/images/uploads/' + str(item.id))
         db_session.delete(item)
@@ -170,13 +175,16 @@ def delete_item(category_id, item_id):
                                item=item, form=form, logged_in=logged_in, login_session=login_session)
 
 
-@app.route('/categories/<category_id>/items/<item_id>/edit/', methods=['GET', 'POST'])
+@app.route('/categories/<int:category_id>/items/<int:item_id>/edit/', methods=['GET', 'POST'])
 def edit_item(category_id, item_id):
     logged_in = 'username' in login_session
     if not logged_in:
         flash("You must be logged to perform this operation", category="error")
         return redirect(url_for('index'))
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+    if login_session['user_id'] != item.user_id:
+        flash("You can only modify items created by you", category="error")
+        return redirect(url_for('get_item_by_category', category_id=category_id, item_id=item_id))
     form = ItemForm()
     if form.validate_on_submit():
         form.populate_obj(item)
@@ -247,13 +255,16 @@ def new_category():
                                form=form, logged_in=logged_in, login_session=login_session)
 
 
-@app.route('/categories/<category_id>/edit/', methods=['GET', 'POST'])
+@app.route('/categories/<int:category_id>/edit/', methods=['GET', 'POST'])
 def edit_category(category_id):
     logged_in = 'username' in login_session
     if not logged_in:
         flash("You must be logged to perform this operation", category="error")
         return redirect(url_for('index'))
     category = db_session.query(Category).filter_by(id=category_id).one()
+    if login_session['user_id'] != category.user_id:
+        flash("You can only modify categories created by you", category="error")
+        return redirect(url_for('get_category', category_id=category_id))
     form = CategoryForm(request.form, category)
     if form.validate_on_submit():
         form.populate_obj(category)
@@ -268,13 +279,16 @@ def edit_category(category_id):
                                form=form, logged_in=logged_in, login_session=login_session)
 
 
-@app.route('/categories/<category_id>/delete/', methods=['GET', 'POST'])
+@app.route('/categories/<int:category_id>/delete/', methods=['GET', 'POST'])
 def delete_category(category_id):
     logged_in = 'username' in login_session
     if not logged_in:
         flash("You must be logged to perform this operation", category="error")
         return redirect(url_for('index'))
     category = db_session.query(Category).filter_by(id=category_id).one()
+    if login_session['user_id'] != category.user_id:
+        flash("You can only modify categories created by you", category="error")
+        return redirect(url_for('get_category', category_id=category_id))
     form = DeleteForm()
     if form.validate_on_submit():
         items = db_session.query(Item).filter_by(category_id=category_id).all()
