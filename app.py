@@ -38,6 +38,7 @@ def delete_dir(dir_name):
     if os.path.exists(dir_name):
         shutil.rmtree(dir_name)
 
+
 @app.route('/gdisconnect')
 def gdisconnect():
     if 'access_token' not in login_session:
@@ -129,7 +130,7 @@ def login():
                            active_category=-1, logged_in=logged_in, STATE=state, CLIENT_ID=CLIENT_ID)
 
 
-@app.route('/categories/<category_id>/items/')
+@app.route('/categories/<int:category_id>/items/')
 def get_category(category_id):
     logged_in = 'username' in login_session
     categories = db_session.query(Category).order_by(Category.name).all()
@@ -140,7 +141,7 @@ def get_category(category_id):
                            category_owner=categpry.user_id)
 
 
-@app.route('/categories/<category_id>/items/<item_id>/')
+@app.route('/categories/<int:category_id>/items/<int:item_id>/')
 def get_item_by_category(category_id, item_id):
     logged_in = 'username' in login_session
     categories = db_session.query(Category).order_by(Category.name).all()
@@ -203,7 +204,7 @@ def edit_item(category_id, item_id):
                                item=item, form=form, logged_in=logged_in, login_session=login_session)
 
 
-@app.route('/categories/<category_id>/items/new/', methods=['GET', 'POST'])
+@app.route('/categories/<int:category_id>/items/new/', methods=['GET', 'POST'])
 def new_item(category_id):
     logged_in = 'username' in login_session
     if not logged_in:
@@ -310,7 +311,7 @@ def json_api_categories():
     return jsonify(categories=[r.serialize for r in categories])
 
 
-@app.route('/json/categories/<category_id>/items/')
+@app.route('/json/categories/<int:category_id>/items/')
 def json_api_get_category(category_id):
     items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
     return jsonify(items=[r.serialize for r in items])
@@ -322,13 +323,13 @@ def json_api_items():
     return jsonify(items=[r.serialize for r in items])
 
 
-@app.route('/json/items/<item_id>/')
+@app.route('/json/items/<int:item_id>/')
 def json_api_get_item(item_id):
     item = db_session.query(Item).filter_by(id=item_id).one()
     return jsonify(item.serialize)
 
 
-@app.route('/json/categories/<category_id>/items/<item_id>/')
+@app.route('/json/categories/<int:category_id>/items/<int:item_id>/')
 def json_api_get_item_by_category(category_id, item_id):
     item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
     return jsonify(item.serialize)
