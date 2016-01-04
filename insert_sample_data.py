@@ -5,7 +5,7 @@ import json
 import sys
 import time
 
-engine = create_engine('sqlite:///item_catalog.db')
+engine = create_engine('postgresql+psycopg2:///item_catalog', client_encoding='utf8')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 db_session = DBSession()
@@ -23,7 +23,8 @@ def read_data_from_json_file(file_name):
         document or the file isn't found.
     """
     try:
-        data = json.load(open(file_name))
+        file = open(file_name, encoding="utf-8")
+        data = json.load(file)
     except Exception as e1:
         print("Error  failed to open file: {}".format(file_name))
         print(e1)
