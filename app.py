@@ -73,7 +73,8 @@ def gconnect():
     except FlowExchangeError:
         flash("Failed to upgrade the authorization code", "error")
         return redirect(url_for('index'))
-    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={}'.format(credentials.access_token))
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={}'.
+           format(credentials.access_token))
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1].decode('utf-8'))
     if result.get('error') is not None:
@@ -113,15 +114,17 @@ def index():
     try:
         logged_in = 'username' in login_session
         categories = db_session.query(Category).order_by(Category.name).all()
-        latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).limit(25).all()
+        latest_items = db_session.query(Item).order_by(desc(Item.modified_date))\
+            .limit(25).all()
         return render_template('index.html', categories=categories, items=latest_items,
-                               active_category=0, logged_in=logged_in, login_session=login_session)
+                               active_category=0, logged_in=logged_in,
+                               login_session=login_session)
     except Exception as e:
         output = '''
         <h1>An error has occurred</h1>
         <p>{}</p>
         '''.format(str(e))
-        return output;
+        return output
 
 
 @app.route('/login/')
@@ -135,7 +138,8 @@ def login():
         state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
         login_session['state'] = state
         return render_template('login.html', categories=categories,
-                               active_category=-1, logged_in=logged_in, STATE=state, CLIENT_ID=CLIENT_ID)
+                               active_category=-1, logged_in=logged_in, STATE=state,
+                               CLIENT_ID=CLIENT_ID)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
@@ -147,9 +151,11 @@ def get_category(category_id):
         logged_in = 'username' in login_session
         categories = db_session.query(Category).order_by(Category.name).all()
         categpry = db_session.query(Category).filter_by(id=category_id).one()
-        items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
-        return render_template('index.html', categories=categories, active_category=int(category_id),
-                               items=items, logged_in=logged_in, login_session=login_session,
+        items = db_session.query(Item).filter_by(category_id=category_id)\
+            .order_by(Item.name).all()
+        return render_template('index.html', categories=categories,
+                               active_category=int(category_id), items=items,
+                               logged_in=logged_in, login_session=login_session,
                                category_owner=categpry.user_id)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
@@ -162,8 +168,9 @@ def get_item_by_category(category_id, item_id):
         logged_in = 'username' in login_session
         categories = db_session.query(Category).order_by(Category.name).all()
         item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
-        return render_template('items.html', categories=categories, active_category=int(category_id),
-                               item=item, logged_in=logged_in, login_session=login_session)
+        return render_template('items.html', categories=categories,
+                               active_category=int(category_id), item=item,
+                               logged_in=logged_in, login_session=login_session)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
@@ -179,7 +186,8 @@ def delete_item(category_id, item_id):
         item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
         if login_session['user_id'] != item.user_id:
             flash("You can only modify items created by you", category="error")
-            return redirect(url_for('get_item_by_category', category_id=category_id, item_id=item_id))
+            return redirect(url_for('get_item_by_category', category_id=category_id,
+                                    item_id=item_id))
         form = DeleteForm()
         if form.validate_on_submit():
             delete_dir('static/images/uploads/' + str(item.id))
@@ -192,8 +200,10 @@ def delete_item(category_id, item_id):
                 return redirect(url_for('index'))
         else:
             categories = db_session.query(Category).order_by(Category.name).all()
-            return render_template('delete_item.html', categories=categories, active_category=int(category_id),
-                                   item=item, form=form, logged_in=logged_in, login_session=login_session)
+            return render_template('delete_item.html', categories=categories,
+                                   active_category=int(category_id),
+                                   item=item, form=form, logged_in=logged_in,
+                                   login_session=login_session)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
@@ -209,23 +219,27 @@ def edit_item(category_id, item_id):
         item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
         if login_session['user_id'] != item.user_id:
             flash("You can only modify items created by you", category="error")
-            return redirect(url_for('get_item_by_category', category_id=category_id, item_id=item_id))
+            return redirect(url_for('get_item_by_category', category_id=category_id,
+                                    item_id=item_id))
         form = ItemForm()
         if form.validate_on_submit():
             form.populate_obj(item)
             if len(secure_filename(form.photo.data.filename)) > 0:
-                filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
+                filename = 'images/uploads/' + str(item.id) + '/' + \
+                           secure_filename(form.photo.data.filename)
                 ensure_dir('static/' + filename)
                 form.photo.data.save('static/' + filename)
                 item.image_path = filename
             db_session.add(item)
             db_session.commit()
             flash("Item '{}' successfully edited".format(item.name))
-            return redirect(url_for('get_item_by_category', category_id=item.category_id, item_id=item_id))
+            return redirect(url_for('get_item_by_category', category_id=item.category_id,
+                                    item_id=item_id))
         else:
             categories = db_session.query(Category).order_by(Category.name).all()
-            return render_template('edit_item.html', categories=categories, active_category=int(category_id),
-                                   item=item, form=form, logged_in=logged_in, login_session=login_session)
+            return render_template('edit_item.html', categories=categories,
+                                   active_category=int(category_id), item=item, form=form,
+                                   logged_in=logged_in, login_session=login_session)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
@@ -247,18 +261,21 @@ def new_item(category_id):
             db_session.add(item)
             if len(secure_filename(form.photo.data.filename)) > 0:
                 db_session.flush()
-                filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
+                filename = 'images/uploads/' + str(item.id) + '/' + \
+                           secure_filename(form.photo.data.filename)
                 ensure_dir('static/' + filename)
                 form.photo.data.save('static/' + filename)
                 item.image_path = filename
                 db_session.add(item)
             db_session.commit()
             flash("Item '{}' successfully added".format(item.name))
-            return redirect(url_for('get_item_by_category', category_id=item.category_id, item_id=item.id))
+            return redirect(url_for('get_item_by_category', category_id=item.category_id,
+                                    item_id=item.id))
         else:
             categories = db_session.query(Category).order_by(Category.name).all()
-            return render_template('new_item.html', categories=categories, active_category=int(category_id),
-                                   item=item, form=form, logged_in=logged_in, login_session=login_session)
+            return render_template('new_item.html', categories=categories,
+                                   active_category=int(category_id), item=item, form=form,
+                                   logged_in=logged_in, login_session=login_session)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
@@ -284,8 +301,8 @@ def new_category():
         else:
             categories = db_session.query(Category).order_by(Category.name).all()
             return render_template('new_category.html', categories=categories,
-                                   active_category=-1,
-                                   form=form, logged_in=logged_in, login_session=login_session)
+                                   active_category=-1, form=form, logged_in=logged_in,
+                                   login_session=login_session)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
@@ -312,8 +329,8 @@ def edit_category(category_id):
         else:
             categories = db_session.query(Category).order_by(Category.name).all()
             return render_template('edit_category.html', categories=categories,
-                                   active_category=category_id,
-                                   form=form, logged_in=logged_in, login_session=login_session)
+                                   active_category=category_id, form=form, logged_in=logged_in,
+                                   login_session=login_session)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
@@ -341,8 +358,9 @@ def delete_category(category_id):
             return redirect(url_for('index'))
         else:
             categories = db_session.query(Category).order_by(Category.name).all()
-            return render_template('delete_category.html', categories=categories, active_category=int(category_id),
-                                   category=category, form=form, logged_in=logged_in, login_session=login_session)
+            return render_template('delete_category.html', categories=categories,
+                                   active_category=int(category_id), category=category,
+                                   form=form, logged_in=logged_in, login_session=login_session)
     except Exception as e:
         flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
