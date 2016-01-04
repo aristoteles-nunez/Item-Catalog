@@ -360,6 +360,12 @@ def xml_api_categories():
     return app.response_class(tostring(data), mimetype='application/xml')
 
 
+@app.errorhandler(404)
+def page_not_found(error):
+    flash('Page not found: {}'.format(request.path), "error")
+    return redirect(url_for('index'))
+
+
 def create_user():
     new_user = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
