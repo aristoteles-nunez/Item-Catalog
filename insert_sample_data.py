@@ -47,7 +47,7 @@ def main():
             db_session.commit()
             time.sleep(1)
             for element_item in element_category["items"]:
-                item = Item(name=element_item["name"], description= element_item["description"],
+                item = Item(name=element_item["name"], description=element_item["description"],
                             category_id=category.id, image_path=element_item["image_path"],
                             user_id=user.id)
                 db_session.add(item)
