@@ -355,6 +355,8 @@ def xml_api_categories():
             item_image.text = item.image_path
             item_modified_date = SubElement(items, 'modified_date')
             item_modified_date.text = str(item.modified_date)
+            item_user_id = SubElement(items, 'user_id')
+            item_user_id.text = str(item.user_id)
     return app.response_class(tostring(data), mimetype='application/xml')
 
 
