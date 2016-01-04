@@ -110,255 +110,328 @@ def gconnect():
 
 @app.route('/')
 def index():
-    logged_in = 'username' in login_session
-    categories = db_session.query(Category).order_by(Category.name).all()
-    latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).limit(25).all()
-    return render_template('index.html', categories=categories, items=latest_items,
-                           active_category=0, logged_in=logged_in, login_session=login_session)
+    try:
+        logged_in = 'username' in login_session
+        categories = db_session.query(Category).order_by(Category.name).all()
+        latest_items = db_session.query(Item).order_by(desc(Item.modified_date)).limit(25).all()
+        return render_template('index.html', categories=categories, items=latest_items,
+                               active_category=0, logged_in=logged_in, login_session=login_session)
+    except Exception as e:
+        output = '''
+        <h1>An error has occurred</h1>
+        <p>{}</p>
+        '''.format(str(e))
+        return output;
 
 
 @app.route('/login/')
 def login():
-    logged_in = 'username' in login_session
-    if logged_in:
-        flash("User already logged", category="info")
+    try:
+        logged_in = 'username' in login_session
+        if logged_in:
+            flash("User already logged", category="info")
+            return redirect(url_for('index'))
+        categories = db_session.query(Category).order_by(Category.name).all()
+        state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+        login_session['state'] = state
+        return render_template('login.html', categories=categories,
+                               active_category=-1, logged_in=logged_in, STATE=state, CLIENT_ID=CLIENT_ID)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
-    categories = db_session.query(Category).order_by(Category.name).all()
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
-    login_session['state'] = state
-    return render_template('login.html', categories=categories,
-                           active_category=-1, logged_in=logged_in, STATE=state, CLIENT_ID=CLIENT_ID)
 
 
 @app.route('/categories/<int:category_id>/items/')
 def get_category(category_id):
-    logged_in = 'username' in login_session
-    categories = db_session.query(Category).order_by(Category.name).all()
-    categpry = db_session.query(Category).filter_by(id=category_id).one()
-    items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
-    return render_template('index.html', categories=categories, active_category=int(category_id),
-                           items=items, logged_in=logged_in, login_session=login_session,
-                           category_owner=categpry.user_id)
+    try:
+        logged_in = 'username' in login_session
+        categories = db_session.query(Category).order_by(Category.name).all()
+        categpry = db_session.query(Category).filter_by(id=category_id).one()
+        items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
+        return render_template('index.html', categories=categories, active_category=int(category_id),
+                               items=items, logged_in=logged_in, login_session=login_session,
+                               category_owner=categpry.user_id)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
+        return redirect(url_for('index'))
 
 
 @app.route('/categories/<int:category_id>/items/<int:item_id>/')
 def get_item_by_category(category_id, item_id):
-    logged_in = 'username' in login_session
-    categories = db_session.query(Category).order_by(Category.name).all()
-    item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
-    return render_template('items.html', categories=categories, active_category=int(category_id),
-                           item=item, logged_in=logged_in, login_session=login_session)
+    try:
+        logged_in = 'username' in login_session
+        categories = db_session.query(Category).order_by(Category.name).all()
+        item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+        return render_template('items.html', categories=categories, active_category=int(category_id),
+                               item=item, logged_in=logged_in, login_session=login_session)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
+        return redirect(url_for('index'))
 
 
 @app.route('/categories/<int:category_id>/items/<int:item_id>/delete/', methods=['GET', 'POST'])
 def delete_item(category_id, item_id):
-    logged_in = 'username' in login_session
-    if not logged_in:
-        flash("You must be logged to perform this operation", category="error")
-        return redirect(url_for('index'))
-    item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
-    if login_session['user_id'] != item.user_id:
-        flash("You can only modify items created by you", category="error")
-        return redirect(url_for('get_item_by_category', category_id=category_id, item_id=item_id))
-    form = DeleteForm()
-    if form.validate_on_submit():
-        delete_dir('static/images/uploads/' + str(item.id))
-        db_session.delete(item)
-        db_session.commit()
-        flash("Item '{}' successfully deleted".format(item.name))
-        if category_id > 0:
-            return redirect(url_for('get_category', category_id=category_id))
-        else:
+    try:
+        logged_in = 'username' in login_session
+        if not logged_in:
+            flash("You must be logged to perform this operation", category="error")
             return redirect(url_for('index'))
-    else:
-        categories = db_session.query(Category).order_by(Category.name).all()
-        return render_template('delete_item.html', categories=categories, active_category=int(category_id),
-                               item=item, form=form, logged_in=logged_in, login_session=login_session)
+        item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+        if login_session['user_id'] != item.user_id:
+            flash("You can only modify items created by you", category="error")
+            return redirect(url_for('get_item_by_category', category_id=category_id, item_id=item_id))
+        form = DeleteForm()
+        if form.validate_on_submit():
+            delete_dir('static/images/uploads/' + str(item.id))
+            db_session.delete(item)
+            db_session.commit()
+            flash("Item '{}' successfully deleted".format(item.name))
+            if category_id > 0:
+                return redirect(url_for('get_category', category_id=category_id))
+            else:
+                return redirect(url_for('index'))
+        else:
+            categories = db_session.query(Category).order_by(Category.name).all()
+            return render_template('delete_item.html', categories=categories, active_category=int(category_id),
+                                   item=item, form=form, logged_in=logged_in, login_session=login_session)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
+        return redirect(url_for('index'))
 
 
 @app.route('/categories/<int:category_id>/items/<int:item_id>/edit/', methods=['GET', 'POST'])
 def edit_item(category_id, item_id):
-    logged_in = 'username' in login_session
-    if not logged_in:
-        flash("You must be logged to perform this operation", category="error")
+    try:
+        logged_in = 'username' in login_session
+        if not logged_in:
+            flash("You must be logged to perform this operation", category="error")
+            return redirect(url_for('index'))
+        item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+        if login_session['user_id'] != item.user_id:
+            flash("You can only modify items created by you", category="error")
+            return redirect(url_for('get_item_by_category', category_id=category_id, item_id=item_id))
+        form = ItemForm()
+        if form.validate_on_submit():
+            form.populate_obj(item)
+            if len(secure_filename(form.photo.data.filename)) > 0:
+                filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
+                ensure_dir('static/' + filename)
+                form.photo.data.save('static/' + filename)
+                item.image_path = filename
+            db_session.add(item)
+            db_session.commit()
+            flash("Item '{}' successfully edited".format(item.name))
+            return redirect(url_for('get_item_by_category', category_id=item.category_id, item_id=item_id))
+        else:
+            categories = db_session.query(Category).order_by(Category.name).all()
+            return render_template('edit_item.html', categories=categories, active_category=int(category_id),
+                                   item=item, form=form, logged_in=logged_in, login_session=login_session)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
-    item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
-    if login_session['user_id'] != item.user_id:
-        flash("You can only modify items created by you", category="error")
-        return redirect(url_for('get_item_by_category', category_id=category_id, item_id=item_id))
-    form = ItemForm()
-    if form.validate_on_submit():
-        form.populate_obj(item)
-        if len(secure_filename(form.photo.data.filename)) > 0:
-            filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
-            ensure_dir('static/' + filename)
-            form.photo.data.save('static/' + filename)
-            item.image_path = filename
-        db_session.add(item)
-        db_session.commit()
-        flash("Item '{}' successfully edited".format(item.name))
-        return redirect(url_for('get_item_by_category', category_id=item.category_id, item_id=item_id))
-    else:
-        categories = db_session.query(Category).order_by(Category.name).all()
-        return render_template('edit_item.html', categories=categories, active_category=int(category_id),
-                               item=item, form=form, logged_in=logged_in, login_session=login_session)
 
 
 @app.route('/categories/<int:category_id>/items/new/', methods=['GET', 'POST'])
 def new_item(category_id):
-    logged_in = 'username' in login_session
-    if not logged_in:
-        flash("You must be logged to perform this operation", category="error")
-        return redirect(url_for('index'))
-    form = ItemForm()
-    item = Item()
-    item.name = "New item"
-    if form.validate_on_submit():
-        form.populate_obj(item)
-        item.user_id = login_session["user_id"]
-        db_session.add(item)
-        if len(secure_filename(form.photo.data.filename)) > 0:
-            db_session.flush()
-            filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
-            ensure_dir('static/' + filename)
-            form.photo.data.save('static/' + filename)
-            item.image_path = filename
+    try:
+        logged_in = 'username' in login_session
+        if not logged_in:
+            flash("You must be logged to perform this operation", category="error")
+            return redirect(url_for('index'))
+        form = ItemForm()
+        item = Item()
+        item.name = "New item"
+        if form.validate_on_submit():
+            form.populate_obj(item)
+            item.user_id = login_session["user_id"]
             db_session.add(item)
-        db_session.commit()
-        flash("Item '{}' successfully added".format(item.name))
-        return redirect(url_for('get_item_by_category', category_id=item.category_id, item_id=item.id))
-    else:
-        categories = db_session.query(Category).order_by(Category.name).all()
-        return render_template('new_item.html', categories=categories, active_category=int(category_id),
-                               item=item, form=form, logged_in=logged_in, login_session=login_session)
+            if len(secure_filename(form.photo.data.filename)) > 0:
+                db_session.flush()
+                filename = 'images/uploads/' + str(item.id) + '/' + secure_filename(form.photo.data.filename)
+                ensure_dir('static/' + filename)
+                form.photo.data.save('static/' + filename)
+                item.image_path = filename
+                db_session.add(item)
+            db_session.commit()
+            flash("Item '{}' successfully added".format(item.name))
+            return redirect(url_for('get_item_by_category', category_id=item.category_id, item_id=item.id))
+        else:
+            categories = db_session.query(Category).order_by(Category.name).all()
+            return render_template('new_item.html', categories=categories, active_category=int(category_id),
+                                   item=item, form=form, logged_in=logged_in, login_session=login_session)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
+        return redirect(url_for('index'))
 
 
 @app.route('/categories/new/', methods=['GET', 'POST'])
 def new_category():
-    logged_in = 'username' in login_session
-    if not logged_in:
-        flash("You must be logged to perform this operation", category="error")
+    try:
+        logged_in = 'username' in login_session
+        if not logged_in:
+            flash("You must be logged to perform this operation", category="error")
+            return redirect(url_for('index'))
+        form = CategoryForm()
+        category = Category()
+        category.name = "New item"
+        if form.validate_on_submit():
+            form.populate_obj(category)
+            category.user_id = login_session["user_id"]
+            db_session.add(category)
+            db_session.commit()
+            flash("Category '{}' successfully added".format(category.name))
+            return redirect(url_for('get_category', category_id=category.id))
+        else:
+            categories = db_session.query(Category).order_by(Category.name).all()
+            return render_template('new_category.html', categories=categories,
+                                   active_category=-1,
+                                   form=form, logged_in=logged_in, login_session=login_session)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
-    form = CategoryForm()
-    category = Category()
-    category.name = "New item"
-    if form.validate_on_submit():
-        form.populate_obj(category)
-        category.user_id = login_session["user_id"]
-        db_session.add(category)
-        db_session.commit()
-        flash("Category '{}' successfully added".format(category.name))
-        return redirect(url_for('get_category', category_id=category.id))
-    else:
-        categories = db_session.query(Category).order_by(Category.name).all()
-        return render_template('new_category.html', categories=categories,
-                               active_category=-1,
-                               form=form, logged_in=logged_in, login_session=login_session)
 
 
 @app.route('/categories/<int:category_id>/edit/', methods=['GET', 'POST'])
 def edit_category(category_id):
-    logged_in = 'username' in login_session
-    if not logged_in:
-        flash("You must be logged to perform this operation", category="error")
+    try:
+        logged_in = 'username' in login_session
+        if not logged_in:
+            flash("You must be logged to perform this operation", category="error")
+            return redirect(url_for('index'))
+        category = db_session.query(Category).filter_by(id=category_id).one()
+        if login_session['user_id'] != category.user_id:
+            flash("You can only modify categories created by you", category="error")
+            return redirect(url_for('get_category', category_id=category_id))
+        form = CategoryForm(request.form, category)
+        if form.validate_on_submit():
+            form.populate_obj(category)
+            db_session.add(category)
+            db_session.commit()
+            flash("Category '{}' successfully updated".format(category.name))
+            return redirect(url_for('get_category', category_id=category.id))
+        else:
+            categories = db_session.query(Category).order_by(Category.name).all()
+            return render_template('edit_category.html', categories=categories,
+                                   active_category=category_id,
+                                   form=form, logged_in=logged_in, login_session=login_session)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
-    category = db_session.query(Category).filter_by(id=category_id).one()
-    if login_session['user_id'] != category.user_id:
-        flash("You can only modify categories created by you", category="error")
-        return redirect(url_for('get_category', category_id=category_id))
-    form = CategoryForm(request.form, category)
-    if form.validate_on_submit():
-        form.populate_obj(category)
-        db_session.add(category)
-        db_session.commit()
-        flash("Category '{}' successfully updated".format(category.name))
-        return redirect(url_for('get_category', category_id=category.id))
-    else:
-        categories = db_session.query(Category).order_by(Category.name).all()
-        return render_template('edit_category.html', categories=categories,
-                               active_category=category_id,
-                               form=form, logged_in=logged_in, login_session=login_session)
 
 
 @app.route('/categories/<int:category_id>/delete/', methods=['GET', 'POST'])
 def delete_category(category_id):
-    logged_in = 'username' in login_session
-    if not logged_in:
-        flash("You must be logged to perform this operation", category="error")
+    try:
+        logged_in = 'username' in login_session
+        if not logged_in:
+            flash("You must be logged to perform this operation", category="error")
+            return redirect(url_for('index'))
+        category = db_session.query(Category).filter_by(id=category_id).one()
+        if login_session['user_id'] != category.user_id:
+            flash("You can only modify categories created by you", category="error")
+            return redirect(url_for('get_category', category_id=category_id))
+        form = DeleteForm()
+        if form.validate_on_submit():
+            items = db_session.query(Item).filter_by(category_id=category_id).all()
+            for item in items:
+                delete_dir('static/images/uploads/' + str(item.id))
+            db_session.delete(category)
+            db_session.commit()
+            flash("Category '{}' successfully deleted".format(category.name))
+            return redirect(url_for('index'))
+        else:
+            categories = db_session.query(Category).order_by(Category.name).all()
+            return render_template('delete_category.html', categories=categories, active_category=int(category_id),
+                                   category=category, form=form, logged_in=logged_in, login_session=login_session)
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
         return redirect(url_for('index'))
-    category = db_session.query(Category).filter_by(id=category_id).one()
-    if login_session['user_id'] != category.user_id:
-        flash("You can only modify categories created by you", category="error")
-        return redirect(url_for('get_category', category_id=category_id))
-    form = DeleteForm()
-    if form.validate_on_submit():
-        items = db_session.query(Item).filter_by(category_id=category_id).all()
-        for item in items:
-            delete_dir('static/images/uploads/' + str(item.id))
-        db_session.delete(category)
-        db_session.commit()
-        flash("Category '{}' successfully deleted".format(category.name))
-        return redirect(url_for('index'))
-    else:
-        categories = db_session.query(Category).order_by(Category.name).all()
-        return render_template('delete_category.html', categories=categories, active_category=int(category_id),
-                               category=category, form=form, logged_in=logged_in, login_session=login_session)
 
 
 @app.route('/json/categories/')
 def json_api_categories():
-    categories = db_session.query(Category).order_by(Category.name).all()
-    return jsonify(categories=[r.serialize for r in categories])
+    try:
+        categories = db_session.query(Category).order_by(Category.name).all()
+        return jsonify(categories=[r.serialize for r in categories])
+    except Exception as e:
+        response = make_response(json.dumps('An error has occurred {}'.format(str(e)), 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route('/json/categories/<int:category_id>/items/')
 def json_api_get_category(category_id):
-    items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
-    return jsonify(items=[r.serialize for r in items])
+    try:
+        items = db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
+        return jsonify(items=[r.serialize for r in items])
+    except Exception as e:
+        response = make_response(json.dumps('An error has occurred {}'.format(str(e)), 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route('/json/items/')
 def json_api_items():
-    items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
-    return jsonify(items=[r.serialize for r in items])
+    try:
+        items = db_session.query(Item).order_by(desc(Item.modified_date)).all()
+        return jsonify(items=[r.serialize for r in items])
+    except Exception as e:
+        response = make_response(json.dumps('An error has occurred {}'.format(str(e)), 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route('/json/items/<int:item_id>/')
 def json_api_get_item(item_id):
-    item = db_session.query(Item).filter_by(id=item_id).one()
-    return jsonify(item.serialize)
+    try:
+        item = db_session.query(Item).filter_by(id=item_id).one()
+        return jsonify(item.serialize)
+    except Exception as e:
+        response = make_response(json.dumps('An error has occurred {}'.format(str(e)), 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route('/json/categories/<int:category_id>/items/<int:item_id>/')
 def json_api_get_item_by_category(category_id, item_id):
-    item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
-    return jsonify(item.serialize)
+    try:
+        item = db_session.query(Item).filter_by(id=item_id, category_id=category_id).one()
+        return jsonify(item.serialize)
+    except Exception as e:
+        response = make_response(json.dumps('An error has occurred {}'.format(str(e)), 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route('/xml/categories/')
 def xml_api_categories():
-    categories = db_session.query(Category).order_by(Category.name).all()
-    data = Element('categories')
-    for category in categories:
-        cat_id = SubElement(data, 'id')
-        cat_id.text = str(category.id)
-        cat_name = SubElement(data, 'name')
-        cat_name.text = category.name
-        items = SubElement(data, 'items')
-        for item in category.items:
-            item_id = SubElement(items, 'id')
-            item_id.text = str(item.id)
-            item_name = SubElement(items, 'name')
-            item_name.text = item.name
-            item_description = SubElement(items, 'description')
-            item_description.text = item.description
-            item_image = SubElement(items, 'image')
-            item_image.text = item.image_path
-            item_modified_date = SubElement(items, 'modified_date')
-            item_modified_date.text = str(item.modified_date)
-            item_user_id = SubElement(items, 'user_id')
-            item_user_id.text = str(item.user_id)
-    return app.response_class(tostring(data), mimetype='application/xml')
+    try:
+        categories = db_session.query(Category).order_by(Category.name).all()
+        data = Element('categories')
+        for category in categories:
+            cat_id = SubElement(data, 'id')
+            cat_id.text = str(category.id)
+            cat_name = SubElement(data, 'name')
+            cat_name.text = category.name
+            items = SubElement(data, 'items')
+            for item in category.items:
+                item_id = SubElement(items, 'id')
+                item_id.text = str(item.id)
+                item_name = SubElement(items, 'name')
+                item_name.text = item.name
+                item_description = SubElement(items, 'description')
+                item_description.text = item.description
+                item_image = SubElement(items, 'image')
+                item_image.text = item.image_path
+                item_modified_date = SubElement(items, 'modified_date')
+                item_modified_date.text = str(item.modified_date)
+                item_user_id = SubElement(items, 'user_id')
+                item_user_id.text = str(item.user_id)
+        return app.response_class(tostring(data), mimetype='application/xml')
+    except Exception as e:
+        data = Element('error')
+        data.text = str(e)
+        return app.response_class(tostring(data), mimetype='application/xml')
 
 
 @app.errorhandler(404)
@@ -368,24 +441,33 @@ def page_not_found(error):
 
 
 def create_user():
-    new_user = User(name=login_session['username'], email=login_session[
-                   'email'], picture=login_session['picture'])
-    db_session.add(new_user)
-    db_session.commit()
-    user = db_session.query(User).filter_by(email=login_session['email']).one()
-    return user.id
+    try:
+        new_user = User(name=login_session['username'], email=login_session[
+                       'email'], picture=login_session['picture'])
+        db_session.add(new_user)
+        db_session.commit()
+        user = db_session.query(User).filter_by(email=login_session['email']).one()
+        return user.id
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
+        return None
 
 
 def get_user_info(user_id):
-    user = db_session.query(User).filter_by(id=user_id).one()
-    return user
+    try:
+        user = db_session.query(User).filter_by(id=user_id).one()
+        return user
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
+        return None
 
 
 def get_user_id(email):
     try:
         user = db_session.query(User).filter_by(email=email).one()
         return user.id
-    except:
+    except Exception as e:
+        flash('An error has occurred: {}'.format(str(e)), 'error')
         return None
 
 
